@@ -3,10 +3,12 @@ import Login from "./components/Login.vue";
 import HelloWorld from "./components/HelloWorld.vue";
 import Dashboard from "./components/Dashboard.vue";
 import ScanQR from "./components/ScanQR.vue";
+import ClientStatus from "./components/ClientStatus.vue";
 
 const routes = [
   { path: "/", name: "Dashboard", component: Dashboard },
   { path: "/scan-qr", name: "ScanQR", component: ScanQR },
+  { path: "/status", name: "ClientStatus", component: ClientStatus },
   { path: "/login", name: "Login", component: Login },
   // Rute lain seperti monitoring, dsb akan ditambahkan nanti
 ];

@@ -4,6 +4,7 @@
       <ul>
         <li><router-link to="/">Dashboard</router-link></li>
         <li><router-link to="/scan-qr">Scan QR Code</router-link></li>
+        <li><router-link to="/status">Cek Status Client</router-link></li>
         <li><a href="#" @click.prevent="logout">Logout</a></li>
       </ul>
     </nav>
