@@ -1,6 +1,12 @@
 <template>
   <div class="client-detail-container">
     <aside class="sidebar">
+      <div class="sidebar-header">
+        <div class="client-label">Client ID:</div>
+        <div class="client-id">{{ clientId }}</div>
+        <div v-if="waNumber" class="wa-label">Nomor WA:</div>
+        <div v-if="waNumber" class="wa-number">{{ waNumber }}</div>
+      </div>
       <ul>
         <li
           :class="{ active: activeMenu === 'send-message' }"
@@ -65,6 +71,25 @@ import { API_BASE_URL } from "../config";
 const route = useRoute();
 const clientId = route.params.clientId;
 const activeMenu = ref("send-message");
+const waNumber = ref("");
+
+onMounted(async () => {
+  // Fetch info client dari backend
+  try {
+    const token = localStorage.getItem("token");
+    const res = await fetch(`${API_BASE_URL}/sessions/${clientId}/info`, {
+      headers: { Authorization: `Bearer ${token}` },
+    });
+    const data = await res.json();
+    if (res.ok && data.waNumber) {
+      waNumber.value = data.waNumber;
+    } else {
+      waNumber.value = "";
+    }
+  } catch {
+    waNumber.value = "";
+  }
+});
 
 // Kirim Pesan
 const to = ref("");
@@ -148,6 +173,34 @@ const fetchGroups = async () => {
   border-bottom-left-radius: 10px;
   padding: 2rem 0.5rem;
 }
+.sidebar-header {
+  margin-bottom: 1.5rem;
+  padding: 0.5rem 1rem 1rem 1rem;
+  border-bottom: 1px solid #4442;
+  text-align: left;
+}
+.client-label {
+  font-size: 0.95rem;
+  color: #aaa;
+}
+.client-id {
+  font-weight: bold;
+  font-size: 1.1rem;
+  margin-bottom: 0.2rem;
+  color: #fff;
+  word-break: break-all;
+}
+.wa-label {
+  font-size: 0.95rem;
+  color: #aaa;
+  margin-top: 0.5rem;
+}
+.wa-number {
+  font-size: 1.05rem;
+  color: #7fffd4;
+  font-weight: bold;
+  word-break: break-all;
+}
 .sidebar ul {
   list-style: none;
   padding: 0;
@@ -167,6 +220,44 @@ const fetchGroups = async () => {
 .content {
   flex: 1;
   padding: 2rem;
+}
+form {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  max-width: 400px;
+  margin: 1.5rem 0 0 0;
+}
+input,
+textarea {
+  padding: 0.7rem 1rem;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  font-size: 1rem;
+  background: #fff;
+  color: #23272f;
+  transition: border 0.2s, background 0.2s;
+}
+input:focus,
+textarea:focus {
+  border-color: #42b983;
+  outline: none;
+  background: #f9f9f9;
+}
+button[type="submit"] {
+  background: #42b983;
+  color: #fff;
+  border: none;
+  border-radius: 6px;
+  padding: 0.7rem 1.2rem;
+  font-weight: bold;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: background 0.2s;
+  margin-top: 0.5rem;
+}
+button[type="submit"]:hover {
+  background: #369870;
 }
 .result {
   margin-top: 1rem;
@@ -188,6 +279,9 @@ const fetchGroups = async () => {
   .content {
     padding: 1rem;
   }
+  form {
+    max-width: 100%;
+  }
 }
 @media (prefers-color-scheme: dark) {
   .client-detail-container {
@@ -197,6 +291,15 @@ const fetchGroups = async () => {
   .sidebar {
     background: #181b20;
     color: #fff;
+  }
+  .sidebar-header {
+    border-bottom: 1px solid #444;
+  }
+  .client-id {
+    color: #fff;
+  }
+  .wa-number {
+    color: #7fffd4;
   }
   .sidebar li.active,
   .sidebar li:hover {
@@ -217,17 +320,11 @@ const fetchGroups = async () => {
   textarea::placeholder {
     color: #aaa;
   }
-  button {
+  button[type="submit"] {
     background: #42b983;
     color: #fff;
-    border: none;
-    border-radius: 4px;
-    padding: 0.5rem 1.2rem;
-    font-weight: bold;
-    cursor: pointer;
-    transition: background 0.2s;
   }
-  button:hover {
+  button[type="submit"]:hover {
     background: #369870;
   }
   .result {
