@@ -36,6 +36,7 @@
 
 <script setup>
 import { ref } from "vue";
+import { API_BASE_URL } from "../config";
 
 const clientId = ref("");
 const qrImage = ref("");
@@ -45,22 +46,23 @@ const loading = ref(false);
 const sessionCreated = ref(false);
 const creatingSession = ref(false);
 
+const getAuthHeaders = () => {
+  const token = localStorage.getItem("token");
+  return token ? { Authorization: `Bearer ${token}` } : {};
+};
+
 const createSession = async () => {
   error.value = "";
   sessionCreated.value = false;
   creatingSession.value = true;
   try {
-    const token = localStorage.getItem("token");
-    const response = await fetch(
-      `http://localhost:3000/sessions/${clientId.value}`,
-      {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          ...(token ? { Authorization: `Bearer ${token}` } : {}),
-        },
-      }
-    );
+    const response = await fetch(`${API_BASE_URL}/sessions/${clientId.value}`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        ...getAuthHeaders(),
+      },
+    });
     const data = await response.json();
     if (response.ok) {
       sessionCreated.value = true;
@@ -83,7 +85,8 @@ const fetchQrCode = async () => {
   const poll = async () => {
     try {
       const response = await fetch(
-        `http://localhost:3000/sessions/${clientId.value}/qr`
+        `${API_BASE_URL}/sessions/${clientId.value}/qr`,
+        { headers: { ...getAuthHeaders() } }
       );
       const data = await response.json();
       if (response.ok && data.qrImage) {
@@ -95,7 +98,8 @@ const fetchQrCode = async () => {
       } else {
         // Cek status client jika QR tidak ditemukan
         const statusRes = await fetch(
-          `http://localhost:3000/sessions/${clientId.value}/status`
+          `${API_BASE_URL}/sessions/${clientId.value}/status`,
+          { headers: { ...getAuthHeaders() } }
         );
         const statusData = await statusRes.json();
         if (statusRes.ok && statusData.status === "ready") {

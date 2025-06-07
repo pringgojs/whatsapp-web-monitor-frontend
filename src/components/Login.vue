@@ -20,6 +20,7 @@
 <script setup>
 import { ref } from "vue";
 import { useRouter } from "vue-router";
+import { API_BASE_URL } from "../config";
 
 const email = ref("");
 const password = ref("");
@@ -29,8 +30,7 @@ const router = useRouter();
 const handleLogin = async () => {
   error.value = "";
   try {
-    // Ganti URL di bawah dengan endpoint login backend Anda
-    const response = await fetch("http://localhost:3000/auth/login", {
+    const response = await fetch(`${API_BASE_URL}/auth/login`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({

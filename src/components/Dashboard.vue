@@ -22,11 +22,35 @@
 
 <script setup>
 import { useRouter } from "vue-router";
+import { API_BASE_URL } from "../config";
 const router = useRouter();
 function logout() {
   localStorage.removeItem("token");
   router.push("/login");
 }
+const getAuthHeaders = () => {
+  const token = localStorage.getItem("token");
+  return token ? { Authorization: `Bearer ${token}` } : {};
+};
+const fetchSummary = async () => {
+  loading.value = true;
+  error.value = "";
+  try {
+    const response = await fetch(`${API_BASE_URL}/sessions`, {
+      headers: { ...getAuthHeaders() },
+    });
+    const data = await response.json();
+    if (response.ok && data.sessions) {
+      clients.value = data.sessions;
+    } else {
+      error.value = data.error || "Gagal memuat data.";
+    }
+  } catch (e) {
+    error.value = "Gagal memuat data.";
+  } finally {
+    loading.value = false;
+  }
+};
 </script>
 
 <style scoped>

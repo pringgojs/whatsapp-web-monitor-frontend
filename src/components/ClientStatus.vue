@@ -24,11 +24,17 @@
 
 <script setup>
 import { ref } from "vue";
+import { API_BASE_URL } from "../config";
 
 const clientId = ref("");
 const status = ref("");
 const error = ref("");
 const loading = ref(false);
+
+const getAuthHeaders = () => {
+  const token = localStorage.getItem("token");
+  return token ? { Authorization: `Bearer ${token}` } : {};
+};
 
 const checkStatus = async () => {
   error.value = "";
@@ -36,7 +42,10 @@ const checkStatus = async () => {
   loading.value = true;
   try {
     const response = await fetch(
-      `http://localhost:3000/sessions/${clientId.value}/status`
+      `${API_BASE_URL}/sessions/${clientId.value}/status`,
+      {
+        headers: { ...getAuthHeaders() },
+      }
     );
     const data = await response.json();
     if (response.ok && data.status) {

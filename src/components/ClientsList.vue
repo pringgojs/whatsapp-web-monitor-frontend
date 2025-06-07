@@ -148,6 +148,7 @@
 
 <script setup>
 import { ref, onMounted, watch } from "vue";
+import { API_BASE_URL } from "../config";
 
 const clients = ref([]);
 const loading = ref(false);
@@ -181,7 +182,7 @@ const fetchClients = async () => {
   loading.value = true;
   error.value = "";
   try {
-    const response = await fetch("http://localhost:3000/sessions", {
+    const response = await fetch(`${API_BASE_URL}/sessions`, {
       headers: { ...getAuthHeaders() },
     });
     const data = await response.json();
@@ -202,7 +203,7 @@ const fetchClients = async () => {
 const fetchStatus = async (clientId) => {
   try {
     const response = await fetch(
-      `http://localhost:3000/sessions/${clientId}/status`,
+      `${API_BASE_URL}/sessions/${clientId}/status`,
       { headers: { ...getAuthHeaders() } }
     );
     const data = await response.json();
@@ -221,10 +222,10 @@ const addClient = async () => {
   if (!newClientId.value) return;
   try {
     const response = await fetch(
-      `http://localhost:3000/sessions/${newClientId.value}`,
+      `${API_BASE_URL}/sessions/${newClientId.value}`,
       {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
+        headers: { "Content-Type": "application/json", ...getAuthHeaders() },
       }
     );
     const data = await response.json();
@@ -272,16 +273,17 @@ const cancelEdit = () => {
 };
 
 const addClientById = async (clientId) => {
-  await fetch(`http://localhost:3000/sessions/${clientId}`, {
+  await fetch(`${API_BASE_URL}/sessions/${clientId}`, {
     method: "POST",
-    headers: { "Content-Type": "application/json" },
+    headers: { "Content-Type": "application/json", ...getAuthHeaders() },
   });
 };
 
 const deleteClient = async (clientId, silent = false) => {
   try {
-    const response = await fetch(`http://localhost:3000/clients/${clientId}`, {
+    const response = await fetch(`${API_BASE_URL}/clients/${clientId}`, {
       method: "DELETE",
+      headers: { ...getAuthHeaders() },
     });
     if (!silent) fetchClients();
   } catch (e) {
@@ -323,9 +325,9 @@ const doDisconnectClient = async () => {
   try {
     const endpoint =
       disconnectType.value === "destroy"
-        ? `http://localhost:3000/clients/${clientToDisconnect.value}/destroy`
-        : `http://localhost:3000/clients/${clientToDisconnect.value}/disconnect`;
-    await fetch(endpoint, { method: "POST" });
+        ? `${API_BASE_URL}/clients/${clientToDisconnect.value}/destroy`
+        : `${API_BASE_URL}/clients/${clientToDisconnect.value}/disconnect`;
+    await fetch(endpoint, { method: "POST", headers: { ...getAuthHeaders() } });
     fetchClients();
   } catch (e) {
     error.value = "Gagal disconnect client.";
@@ -338,9 +340,9 @@ const doDisconnectClient = async () => {
 const reconnectClient = async (clientId) => {
   reconnectingClients.value[clientId] = true;
   try {
-    await fetch(`http://localhost:3000/sessions/${clientId}`, {
+    await fetch(`${API_BASE_URL}/sessions/${clientId}`, {
       method: "POST",
-      headers: { "Content-Type": "application/json" },
+      headers: { "Content-Type": "application/json", ...getAuthHeaders() },
     });
     // Mulai polling status hingga berubah dari destroyed/disconnected/initializing
     const pollStatus = async (attempt = 0) => {
@@ -385,12 +387,9 @@ const closeQRModal = () => {
 
 const fetchQR = async (clientId) => {
   try {
-    const response = await fetch(
-      `http://localhost:3000/sessions/${clientId}/qr`,
-      {
-        headers: { ...getAuthHeaders() },
-      }
-    );
+    const response = await fetch(`${API_BASE_URL}/sessions/${clientId}/qr`, {
+      headers: { ...getAuthHeaders() },
+    });
     const data = await response.json();
     if (response.ok && data.qrImage) {
       qrImage.value = data.qrImage;
