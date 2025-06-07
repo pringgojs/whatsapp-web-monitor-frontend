@@ -73,6 +73,24 @@
             <button @click="confirmDelete(client)" class="delete-btn">
               Hapus
             </button>
+            <button
+              v-if="
+                statuses[client] === 'ready' || statuses[client] === 'connected'
+              "
+              @click="confirmDisconnect(client, 'logout')"
+              class="disconnect-btn"
+            >
+              Logout (QR Baru)
+            </button>
+            <button
+              v-if="
+                statuses[client] === 'ready' || statuses[client] === 'connected'
+              "
+              @click="confirmDisconnect(client, 'destroy')"
+              class="disconnect-btn destroy"
+            >
+              Putus Koneksi (Session Tetap)
+            </button>
           </td>
         </tr>
       </tbody>
@@ -85,6 +103,14 @@
       <p>{{ deleteWarning }}</p>
       <button @click="doDeleteClient">Ya, Hapus</button>
       <button @click="showDeleteConfirm = false">Batal</button>
+    </div>
+  </div>
+  <div v-if="showDisconnectConfirm" class="modal">
+    <div class="modal-content">
+      <h3>Konfirmasi Disconnect Client</h3>
+      <p>{{ disconnectWarning }}</p>
+      <button @click="doDisconnectClient">Ya, Disconnect</button>
+      <button @click="showDisconnectConfirm = false">Batal</button>
     </div>
   </div>
 </template>
@@ -104,6 +130,10 @@ const editClientIdInput = ref("");
 const showDeleteConfirm = ref(false);
 const clientToDelete = ref("");
 const deleteWarning = ref("");
+const showDisconnectConfirm = ref(false);
+const clientToDisconnect = ref("");
+const disconnectWarning = ref("");
+const disconnectType = ref("logout");
 
 const fetchClients = async () => {
   loading.value = true;
@@ -234,6 +264,32 @@ const doDeleteClient = async () => {
   clientToDelete.value = "";
 };
 
+const confirmDisconnect = (client, type = "logout") => {
+  clientToDisconnect.value = client;
+  disconnectType.value = type;
+  disconnectWarning.value =
+    type === "logout"
+      ? "Yakin ingin logout client ini? WhatsApp akan logout dan harus scan QR lagi."
+      : "Yakin ingin memutus koneksi client ini? Session tetap ada, tidak perlu scan QR ulang.";
+  showDisconnectConfirm.value = true;
+};
+
+const doDisconnectClient = async () => {
+  try {
+    const endpoint =
+      disconnectType.value === "destroy"
+        ? `http://localhost:3000/clients/${clientToDisconnect.value}/destroy`
+        : `http://localhost:3000/clients/${clientToDisconnect.value}/disconnect`;
+    await fetch(endpoint, { method: "POST" });
+    fetchClients();
+  } catch (e) {
+    error.value = "Gagal disconnect client.";
+  } finally {
+    showDisconnectConfirm.value = false;
+    clientToDisconnect.value = "";
+  }
+};
+
 onMounted(fetchClients);
 watch(clients, (newClients) => {
   newClients.forEach(fetchStatus);
@@ -312,6 +368,25 @@ watch(clients, (newClients) => {
 }
 .delete-btn:hover {
   background: #c0392b;
+}
+.disconnect-btn {
+  background: #f39c12;
+  color: #fff;
+  border: none;
+  border-radius: 4px;
+  padding: 0.3rem 0.8rem;
+  font-weight: bold;
+  cursor: pointer;
+  margin-left: 0.5rem;
+}
+.disconnect-btn.destroy {
+  background: #6c757d;
+}
+.disconnect-btn.destroy:hover {
+  background: #495057;
+}
+.disconnect-btn:hover {
+  background: #b9770e;
 }
 .modal {
   position: fixed;
