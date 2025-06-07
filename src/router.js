@@ -5,6 +5,7 @@ import Dashboard from "./components/Dashboard.vue";
 import ScanQR from "./components/ScanQR.vue";
 import ClientStatus from "./components/ClientStatus.vue";
 import ClientsList from "./components/ClientsList.vue";
+import Register from "./components/Register.vue";
 
 const routes = [
   { path: "/", name: "Dashboard", component: Dashboard },
@@ -12,6 +13,7 @@ const routes = [
   { path: "/status", name: "ClientStatus", component: ClientStatus },
   { path: "/clients", name: "ClientsList", component: ClientsList },
   { path: "/login", name: "Login", component: Login },
+  { path: "/register", component: Register },
   // Rute lain seperti monitoring, dsb akan ditambahkan nanti
 ];
 
@@ -20,10 +22,10 @@ const router = createRouter({
   routes,
 });
 
-// Proteksi route: hanya user login yang bisa akses selain /login
+// Proteksi route: hanya user login yang bisa akses selain /login dan /register
 router.beforeEach((to, from, next) => {
   const token = localStorage.getItem("token");
-  if (to.path !== "/login" && !token) {
+  if (to.path !== "/login" && to.path !== "/register" && !token) {
     next("/login");
   } else if (to.path === "/login" && token) {
     next("/");
