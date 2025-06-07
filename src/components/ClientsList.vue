@@ -91,6 +91,16 @@
             >
               Putus Koneksi (Session Tetap)
             </button>
+            <button
+              v-if="
+                statuses[client] === 'disconnected' ||
+                statuses[client] === 'destroyed'
+              "
+              @click="reconnectClient(client)"
+              class="reconnect-btn"
+            >
+              Reconnect
+            </button>
           </td>
         </tr>
       </tbody>
@@ -134,6 +144,7 @@ const showDisconnectConfirm = ref(false);
 const clientToDisconnect = ref("");
 const disconnectWarning = ref("");
 const disconnectType = ref("logout");
+const reconnectingClients = ref({}); // key: clientId, value: true/false
 
 const fetchClients = async () => {
   loading.value = true;
@@ -290,6 +301,37 @@ const doDisconnectClient = async () => {
   }
 };
 
+const reconnectClient = async (clientId) => {
+  reconnectingClients.value[clientId] = true;
+  try {
+    await fetch(`http://localhost:3000/sessions/${clientId}`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+    });
+    // Mulai polling status hingga berubah dari destroyed/disconnected/initializing
+    const pollStatus = async (attempt = 0) => {
+      await fetchStatus(clientId);
+      const status = statuses.value[clientId];
+      if (
+        (status === "destroyed" ||
+          status === "disconnected" ||
+          status === "unknown" ||
+          status === "initializing") &&
+        attempt < 30 // max 1 menit
+      ) {
+        setTimeout(() => pollStatus(attempt + 1), 2000);
+      } else {
+        reconnectingClients.value[clientId] = false;
+        fetchClients();
+      }
+    };
+    pollStatus();
+  } catch (e) {
+    error.value = "Gagal reconnect client.";
+    reconnectingClients.value[clientId] = false;
+  }
+};
+
 onMounted(fetchClients);
 watch(clients, (newClients) => {
   newClients.forEach(fetchStatus);
@@ -387,6 +429,24 @@ watch(clients, (newClients) => {
 }
 .disconnect-btn:hover {
   background: #b9770e;
+}
+.reconnect-btn {
+  background: #27ae60;
+  color: #fff;
+  border: none;
+  border-radius: 4px;
+  padding: 0.3rem 0.8rem;
+  font-weight: bold;
+  cursor: pointer;
+  margin-left: 0.5rem;
+}
+.reconnect-btn[disabled],
+.reconnect-btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+.reconnect-btn:hover {
+  background: #219150;
 }
 .modal {
   position: fixed;
