@@ -6,6 +6,7 @@ import ScanQR from "./components/ScanQR.vue";
 import ClientStatus from "./components/ClientStatus.vue";
 import ClientsList from "./components/ClientsList.vue";
 import Register from "./components/Register.vue";
+import ClientDetail from "./components/ClientDetail.vue";
 
 const routes = [
   { path: "/", name: "Dashboard", component: Dashboard },
@@ -14,6 +15,12 @@ const routes = [
   { path: "/clients", name: "ClientsList", component: ClientsList },
   { path: "/login", name: "Login", component: Login },
   { path: "/register", component: Register },
+  {
+    path: "/clients/:clientId",
+    name: "ClientDetail",
+    component: ClientDetail,
+    meta: { requiresAuth: true },
+  },
   // Rute lain seperti monitoring, dsb akan ditambahkan nanti
 ];
 

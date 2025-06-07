@@ -63,6 +63,11 @@
             <span v-else class="loading">Memuat...</span>
           </td>
           <td>
+            <router-link
+              :to="{ name: 'ClientDetail', params: { clientId: client } }"
+              class="detail-link"
+              >Detail</router-link
+            >
             <button
               v-if="editClientId !== client"
               @click="startEdit(client)"
@@ -572,6 +577,20 @@ watch(clients, (newClients) => {
 }
 .breadcrumb a:hover {
   text-decoration: underline;
+}
+.detail-link {
+  background: #23272f;
+  color: #fff;
+  border-radius: 4px;
+  padding: 0.3rem 0.8rem;
+  margin-right: 0.5rem;
+  text-decoration: none;
+  font-weight: bold;
+  transition: background 0.2s;
+}
+.detail-link:hover {
+  background: #42b983;
+  color: #fff;
 }
 @media (prefers-color-scheme: dark) {
   .clients-container {
