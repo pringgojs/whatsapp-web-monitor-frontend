@@ -3,6 +3,17 @@
     <nav class="breadcrumb">
       <router-link to="/">Home</router-link> / Clients
     </nav>
+    <div v-if="showQRModal" class="modal">
+      <div class="modal-content">
+        <h3>Scan WhatsApp QR</h3>
+        <div v-if="qrLoading" class="loading">Loading QR...</div>
+        <div v-else-if="qrImage">
+          <img :src="qrImage" alt="QR Code" style="max-width: 250px" />
+        </div>
+        <div v-else class="error">QR not available.</div>
+        <button @click="closeQRModal">Tutup</button>
+      </div>
+    </div>
     <h1>Daftar Client WhatsApp Terdaftar</h1>
     <button @click="fetchClients" class="refresh-btn">Refresh</button>
     <button @click="showAddClient = true" class="add-btn">Tambah Client</button>
@@ -104,6 +115,13 @@
             >
               Reconnect
             </button>
+            <button
+              v-if="statuses[client] === 'qr'"
+              @click="showQR(client)"
+              class="reconnect-btn"
+            >
+              Scan QR
+            </button>
           </td>
         </tr>
       </tbody>
@@ -148,12 +166,24 @@ const clientToDisconnect = ref("");
 const disconnectWarning = ref("");
 const disconnectType = ref("logout");
 const reconnectingClients = ref({}); // key: clientId, value: true/false
+const showQRModal = ref(false);
+const qrImage = ref("");
+const qrLoading = ref(false);
+const pollingQR = ref(false);
+const currentQRClient = ref("");
+
+const getAuthHeaders = () => {
+  const token = localStorage.getItem("token");
+  return token ? { Authorization: `Bearer ${token}` } : {};
+};
 
 const fetchClients = async () => {
   loading.value = true;
   error.value = "";
   try {
-    const response = await fetch("http://localhost:3000/sessions");
+    const response = await fetch("http://localhost:3000/sessions", {
+      headers: { ...getAuthHeaders() },
+    });
     const data = await response.json();
     if (response.ok && data.sessions) {
       clients.value = data.sessions;
@@ -172,7 +202,8 @@ const fetchClients = async () => {
 const fetchStatus = async (clientId) => {
   try {
     const response = await fetch(
-      `http://localhost:3000/sessions/${clientId}/status`
+      `http://localhost:3000/sessions/${clientId}/status`,
+      { headers: { ...getAuthHeaders() } }
     );
     const data = await response.json();
     if (response.ok && data.status) {
@@ -335,6 +366,67 @@ const reconnectClient = async (clientId) => {
   }
 };
 
+const showQR = async (clientId) => {
+  showQRModal.value = true;
+  qrImage.value = "";
+  qrLoading.value = true;
+  currentQRClient.value = clientId;
+  await fetchQR(clientId);
+  startQRStatusPolling(clientId);
+};
+
+const closeQRModal = () => {
+  showQRModal.value = false;
+  qrImage.value = "";
+  qrLoading.value = false;
+  pollingQR.value = false;
+  currentQRClient.value = "";
+};
+
+const fetchQR = async (clientId) => {
+  try {
+    const response = await fetch(
+      `http://localhost:3000/sessions/${clientId}/qr`,
+      {
+        headers: { ...getAuthHeaders() },
+      }
+    );
+    const data = await response.json();
+    if (response.ok && data.qrImage) {
+      qrImage.value = data.qrImage;
+    } else {
+      qrImage.value = "";
+      if (data.error) {
+        console.warn("QR error:", data.error);
+      }
+    }
+  } catch (e) {
+    qrImage.value = "";
+    console.warn("QR fetch error:", e);
+  } finally {
+    qrLoading.value = false;
+  }
+};
+
+const startQRStatusPolling = (clientId) => {
+  pollingQR.value = true;
+  const poll = async () => {
+    if (!pollingQR.value || currentQRClient.value !== clientId) return;
+    await fetchStatus(clientId);
+    const status = statuses.value[clientId];
+    if (status === "ready" || status === "connected") {
+      closeQRModal();
+      fetchClients();
+    } else if (status === "qr") {
+      await fetchQR(clientId);
+      setTimeout(poll, 2000);
+    } else {
+      setTimeout(poll, 2000);
+    }
+  };
+  poll();
+};
+
 onMounted(fetchClients);
 watch(clients, (newClients) => {
   newClients.forEach(fetchStatus);
@@ -469,6 +561,7 @@ watch(clients, (newClients) => {
   border-radius: 8px;
   min-width: 300px;
   box-shadow: 0 2px 16px rgba(0, 0, 0, 0.15);
+  text-align: center;
 }
 .breadcrumb {
   margin-bottom: 1.5rem;
