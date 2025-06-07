@@ -1,5 +1,8 @@
 <template>
   <div class="clients-container">
+    <nav class="breadcrumb">
+      <router-link to="/">Home</router-link> / Clients
+    </nav>
     <h1>Daftar Client WhatsApp Terdaftar</h1>
     <button @click="fetchClients" class="refresh-btn">Refresh</button>
     <button @click="showAddClient = true" class="add-btn">Tambah Client</button>
@@ -467,6 +470,17 @@ watch(clients, (newClients) => {
   min-width: 300px;
   box-shadow: 0 2px 16px rgba(0, 0, 0, 0.15);
 }
+.breadcrumb {
+  margin-bottom: 1.5rem;
+  font-size: 0.95rem;
+}
+.breadcrumb a {
+  color: #42b983;
+  text-decoration: none;
+}
+.breadcrumb a:hover {
+  text-decoration: underline;
+}
 @media (prefers-color-scheme: dark) {
   .clients-container {
     background: var(--dashboard-bg-dark, #23272f);
@@ -482,6 +496,9 @@ watch(clients, (newClients) => {
   .modal-content {
     background: #23272f;
     color: #fff;
+  }
+  .breadcrumb a {
+    color: #7fffd4;
   }
 }
 </style>

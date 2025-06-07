@@ -1,5 +1,8 @@
 <template>
-  <div class="status-container">
+  <div class="clientstatus-container">
+    <nav class="breadcrumb">
+      <router-link to="/">Home</router-link> / Status
+    </nav>
     <h1>Cek Status Client WhatsApp</h1>
     <form @submit.prevent="checkStatus">
       <label>Client ID</label>
@@ -50,7 +53,7 @@ const checkStatus = async () => {
 </script>
 
 <style scoped>
-.status-container {
+.clientstatus-container {
   max-width: 500px;
   margin: 40px auto;
   padding: 2rem;
@@ -59,17 +62,17 @@ const checkStatus = async () => {
   box-shadow: 0 2px 16px rgba(0, 0, 0, 0.08);
   text-align: center;
 }
-.status-container form {
+.clientstatus-container form {
   margin-bottom: 2rem;
 }
-.status-container input {
+.clientstatus-container input {
   padding: 0.5rem;
   border: 1px solid #ccc;
   border-radius: 4px;
   margin-right: 1rem;
   width: 200px;
 }
-.status-container button {
+.clientstatus-container button {
   padding: 0.5rem 1.2rem;
   background: #42b983;
   color: #fff;
@@ -79,7 +82,7 @@ const checkStatus = async () => {
   cursor: pointer;
   transition: background 0.2s;
 }
-.status-container button:hover {
+.clientstatus-container button:hover {
   background: #369870;
 }
 .status-info {
@@ -95,15 +98,29 @@ const checkStatus = async () => {
   color: #e74c3c;
   margin-top: 1rem;
 }
+.breadcrumb {
+  margin-bottom: 1.5rem;
+  font-size: 0.95rem;
+}
+.breadcrumb a {
+  color: #42b983;
+  text-decoration: none;
+}
+.breadcrumb a:hover {
+  text-decoration: underline;
+}
 @media (prefers-color-scheme: dark) {
-  .status-container {
+  .clientstatus-container {
     background: var(--dashboard-bg-dark, #23272f);
     color: #fff;
   }
-  .status-container input {
+  .clientstatus-container input {
     background: #181a20;
     color: #fff;
     border-color: #444;
+  }
+  .breadcrumb a {
+    color: #7fffd4;
   }
 }
 </style>

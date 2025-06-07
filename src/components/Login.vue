@@ -1,5 +1,6 @@
 <template>
   <div class="login-container">
+    <nav class="breadcrumb"><router-link to="/">Home</router-link> / Login</nav>
     <h2>Login</h2>
     <form @submit.prevent="handleLogin">
       <div>
@@ -98,6 +99,17 @@ const handleLogin = async () => {
   margin-top: 1rem;
   text-align: center;
 }
+.breadcrumb {
+  margin-bottom: 1.5rem;
+  font-size: 0.95rem;
+}
+.breadcrumb a {
+  color: #42b983;
+  text-decoration: none;
+}
+.breadcrumb a:hover {
+  text-decoration: underline;
+}
 @media (prefers-color-scheme: dark) {
   .login-container {
     background: var(--login-bg-dark, #23272f);
@@ -113,6 +125,9 @@ const handleLogin = async () => {
     background: var(--login-input-bg-dark, #181a20);
     color: var(--login-input-color-dark, #fff);
     border-color: #444;
+  }
+  .breadcrumb a {
+    color: #7fffd4;
   }
 }
 </style>

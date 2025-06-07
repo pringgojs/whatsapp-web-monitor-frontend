@@ -10,6 +10,9 @@
       </ul>
     </nav>
     <div class="dashboard-container">
+      <nav class="breadcrumb">
+        <router-link to="/">Home</router-link> / Dashboard
+      </nav>
       <h1>Dashboard</h1>
       <p>Selamat datang di aplikasi monitoring WhatsApp Web!</p>
       <p>Silakan pilih menu di atas untuk mulai menggunakan fitur.</p>
@@ -72,7 +75,21 @@ function logout() {
   box-shadow: 0 2px 16px rgba(0, 0, 0, 0.08);
   text-align: center;
 }
+.breadcrumb {
+  margin-bottom: 1.5rem;
+  font-size: 0.95rem;
+}
+.breadcrumb a {
+  color: #42b983;
+  text-decoration: none;
+}
+.breadcrumb a:hover {
+  text-decoration: underline;
+}
 @media (prefers-color-scheme: dark) {
+  .breadcrumb a {
+    color: #7fffd4;
+  }
   .dashboard-container {
     background: var(--dashboard-bg-dark, #23272f);
     color: #fff;

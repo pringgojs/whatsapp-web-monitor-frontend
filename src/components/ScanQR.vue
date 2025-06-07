@@ -1,5 +1,8 @@
 <template>
   <div class="scanqr-container">
+    <nav class="breadcrumb">
+      <router-link to="/">Home</router-link> / Scan QR
+    </nav>
     <h1>Scan QR Code WhatsApp</h1>
     <form @submit.prevent="fetchQrCode">
       <label>Client ID</label>
@@ -183,6 +186,17 @@ const fetchQrCode = async () => {
   color: #2ecc71;
   margin-top: 1rem;
 }
+.breadcrumb {
+  margin-bottom: 1.5rem;
+  font-size: 0.95rem;
+}
+.breadcrumb a {
+  color: #42b983;
+  text-decoration: none;
+}
+.breadcrumb a:hover {
+  text-decoration: underline;
+}
 @media (prefers-color-scheme: dark) {
   .scanqr-container {
     background: var(--dashboard-bg-dark, #23272f);
@@ -195,6 +209,9 @@ const fetchQrCode = async () => {
   }
   .qr-image img {
     border-color: #444;
+  }
+  .breadcrumb a {
+    color: #7fffd4;
   }
 }
 </style>

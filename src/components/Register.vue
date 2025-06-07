@@ -1,5 +1,8 @@
 <template>
   <div class="register-container">
+    <nav class="breadcrumb">
+      <router-link to="/">Home</router-link> / Register
+    </nav>
     <h2>Register</h2>
     <form @submit.prevent="handleRegister">
       <div>
@@ -107,6 +110,17 @@ button:hover {
   color: #27ae60;
   margin-top: 1rem;
 }
+.breadcrumb {
+  margin-bottom: 1.5rem;
+  font-size: 0.95rem;
+}
+.breadcrumb a {
+  color: #42b983;
+  text-decoration: none;
+}
+.breadcrumb a:hover {
+  text-decoration: underline;
+}
 @media (prefers-color-scheme: dark) {
   .register-container {
     background: #23272f;
@@ -131,6 +145,9 @@ button:hover {
   }
   .success {
     color: #27ae60;
+  }
+  .breadcrumb a {
+    color: #7fffd4;
   }
 }
 </style>
