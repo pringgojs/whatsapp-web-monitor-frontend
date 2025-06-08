@@ -119,8 +119,10 @@
             class="bg-white dark:bg-gray-900 divide-y divide-gray-100 dark:divide-gray-800"
           >
             <tr v-for="(client, idx) in clients" :key="client">
-              <td class="px-4 py-2">{{ idx + 1 }}</td>
-              <td class="px-4 py-2">
+              <td class="px-4 py-2 text-gray-900 dark:text-white">
+                {{ idx + 1 }}
+              </td>
+              <td class="px-4 py-2 text-gray-900 dark:text-white">
                 <span v-if="editClientId !== client">{{ client }}</span>
                 <input
                   v-else
@@ -133,11 +135,13 @@
                   class="px-2 py-1 rounded border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-900 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-primary-500"
                 />
               </td>
-              <td class="px-4 py-2">
+              <td class="px-4 py-2 text-gray-900 dark:text-white">
                 <span v-if="statuses[client]">{{ statuses[client] }}</span>
                 <span v-else class="text-gray-400">Memuat...</span>
               </td>
-              <td class="px-4 py-2 flex flex-wrap gap-1">
+              <td
+                class="px-4 py-2 flex flex-wrap gap-1 text-gray-900 dark:text-white"
+              >
                 <router-link
                   :to="{ name: 'ClientDetail', params: { clientId: client } }"
                   class="bg-gray-800 text-white rounded px-2 py-1 font-semibold hover:bg-emerald-600 transition"
