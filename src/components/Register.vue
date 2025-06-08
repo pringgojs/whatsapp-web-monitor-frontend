@@ -1,28 +1,67 @@
 <template>
-  <div class="register-container">
-    <nav class="breadcrumb">
-      <router-link to="/">Home</router-link> / Register
+  <div
+    class="max-w-sm mx-auto mt-16 p-8 border border-gray-200 dark:border-gray-700 rounded-xl bg-white dark:bg-gray-900 shadow-lg"
+  >
+    <nav
+      class="mb-6 text-sm text-gray-500 dark:text-gray-300 flex items-center gap-1"
+    >
+      <router-link to="/" class="text-emerald-600 hover:underline"
+        >Home</router-link
+      >
+      <span>/</span>
+      <span>Register</span>
     </nav>
-    <h2>Register</h2>
-    <form @submit.prevent="handleRegister">
+    <h2
+      class="text-2xl font-bold mb-6 text-center text-gray-800 dark:text-white"
+    >
+      Register
+    </h2>
+    <form @submit.prevent="handleRegister" class="flex flex-col gap-4">
       <div>
-        <label>Email</label>
-        <input v-model="email" type="email" required />
+        <label class="block mb-1 font-semibold text-gray-700 dark:text-gray-200"
+          >Email</label
+        >
+        <input
+          v-model="email"
+          type="email"
+          required
+          class="w-full px-4 py-2 rounded border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-emerald-400"
+        />
       </div>
       <div>
-        <label>Password</label>
-        <input v-model="password" type="password" required />
+        <label class="block mb-1 font-semibold text-gray-700 dark:text-gray-200"
+          >Password</label
+        >
+        <input
+          v-model="password"
+          type="password"
+          required
+          class="w-full px-4 py-2 rounded border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-emerald-400"
+        />
       </div>
       <div>
-        <label>Role</label>
-        <select v-model="role" required>
+        <label class="block mb-1 font-semibold text-gray-700 dark:text-gray-200"
+          >Role</label
+        >
+        <select
+          v-model="role"
+          required
+          class="w-full px-4 py-2 rounded border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-emerald-400"
+        >
           <option value="admin">Admin</option>
           <option value="user">User</option>
         </select>
       </div>
-      <button type="submit">Register</button>
-      <div v-if="error" class="error">{{ error }}</div>
-      <div v-if="success" class="success">{{ success }}</div>
+      <button
+        type="submit"
+        class="w-full py-2 rounded bg-emerald-600 hover:bg-emerald-700 text-white font-semibold transition-colors mt-2"
+      >
+        Register
+      </button>
+      <div v-if="error" class="text-red-500 mt-2 text-center">{{ error }}</div>
+      <div v-if="success" class="text-emerald-600 mt-2 text-center">
+        {{ success }}
+      </div>
     </form>
   </div>
 </template>
@@ -64,91 +103,3 @@ const handleRegister = async () => {
   }
 };
 </script>
-
-<style scoped>
-.register-container {
-  max-width: 350px;
-  margin: 60px auto;
-  padding: 2rem;
-  border: 1px solid #eee;
-  border-radius: 8px;
-  background: var(--login-bg, #fff);
-}
-form > div {
-  margin-bottom: 1rem;
-}
-label {
-  display: block;
-  margin-bottom: 0.3rem;
-  font-weight: bold;
-}
-input,
-select {
-  width: 100%;
-  padding: 0.5rem;
-  border-radius: 4px;
-  border: 1px solid #ccc;
-}
-button {
-  width: 100%;
-  padding: 0.7rem;
-  background: #42b983;
-  color: #fff;
-  border: none;
-  border-radius: 4px;
-  font-weight: bold;
-  cursor: pointer;
-  margin-top: 0.5rem;
-}
-button:hover {
-  background: #369870;
-}
-.error {
-  color: #e74c3c;
-  margin-top: 1rem;
-}
-.success {
-  color: #27ae60;
-  margin-top: 1rem;
-}
-.breadcrumb {
-  margin-bottom: 1.5rem;
-  font-size: 0.95rem;
-}
-.breadcrumb a {
-  color: #42b983;
-  text-decoration: none;
-}
-.breadcrumb a:hover {
-  text-decoration: underline;
-}
-@media (prefers-color-scheme: dark) {
-  .register-container {
-    background: #23272f;
-    color: #fff;
-    border-color: #444;
-  }
-  input,
-  select {
-    background: #23272f;
-    color: #fff;
-    border-color: #444;
-  }
-  label {
-    color: #fff;
-  }
-  button {
-    background: #369870;
-    color: #fff;
-  }
-  .error {
-    color: #ff7675;
-  }
-  .success {
-    color: #27ae60;
-  }
-  .breadcrumb a {
-    color: #7fffd4;
-  }
-}
-</style>

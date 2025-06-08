@@ -1,35 +1,63 @@
 <template>
-  <div class="scanqr-container">
-    <nav class="breadcrumb">
-      <router-link to="/">Home</router-link> / Scan QR
+  <div
+    class="max-w-md mx-auto mt-12 p-8 bg-white dark:bg-gray-900 rounded-xl shadow-lg text-center"
+  >
+    <nav
+      class="mb-6 text-sm text-gray-500 dark:text-gray-300 flex items-center gap-1 justify-center"
+    >
+      <router-link to="/" class="text-emerald-600 hover:underline"
+        >Home</router-link
+      >
+      <span>/</span>
+      <span>Scan QR</span>
     </nav>
-    <h1>Scan QR Code WhatsApp</h1>
-    <form @submit.prevent="fetchQrCode">
-      <label>Client ID</label>
+    <h1 class="text-2xl font-bold mb-6 text-gray-800 dark:text-white">
+      Scan QR Code WhatsApp
+    </h1>
+    <form
+      @submit.prevent="fetchQrCode"
+      class="flex flex-col gap-3 items-center mb-8"
+    >
+      <label class="sr-only">Client ID</label>
       <input
         v-model="clientId"
         type="text"
         placeholder="Masukkan Client ID"
         required
+        class="px-4 py-2 rounded border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-emerald-400 w-full sm:w-64"
       />
-      <button
-        type="button"
-        @click="createSession"
-        :disabled="creatingSession"
-        class="session-button"
-      >
-        Buat Session
-      </button>
-      <button type="submit" :disabled="!sessionCreated" class="qr-button">
-        Tampilkan QR Code
-      </button>
+      <div class="flex gap-2 w-full sm:w-auto">
+        <button
+          type="button"
+          @click="createSession"
+          :disabled="creatingSession"
+          class="px-4 py-2 bg-blue-600 text-white rounded font-semibold hover:bg-blue-700 transition w-full sm:w-auto disabled:opacity-60 disabled:cursor-not-allowed"
+        >
+          Buat Session
+        </button>
+        <button
+          type="submit"
+          :disabled="!sessionCreated"
+          class="px-4 py-2 bg-emerald-600 text-white rounded font-semibold hover:bg-emerald-700 transition w-full sm:w-auto disabled:opacity-60 disabled:cursor-not-allowed"
+        >
+          Tampilkan QR Code
+        </button>
+      </div>
     </form>
-    <div v-if="loading" class="loading">Memuat QR code...</div>
-    <div v-if="error" class="error">{{ error }}</div>
-    <div v-if="success" class="success">{{ success }}</div>
-    <div v-if="qrImage" class="qr-image">
-      <img :src="qrImage" alt="QR Code WhatsApp" />
-      <p>Scan QR ini di WhatsApp Web</p>
+    <div v-if="loading" class="text-gray-500 dark:text-gray-300 mt-4">
+      Memuat QR code...
+    </div>
+    <div v-if="error" class="text-red-500 mt-4">{{ error }}</div>
+    <div v-if="success" class="text-emerald-600 mt-4">{{ success }}</div>
+    <div v-if="qrImage" class="mt-8 flex flex-col items-center">
+      <img
+        :src="qrImage"
+        alt="QR Code WhatsApp"
+        class="w-56 h-56 rounded-xl border-2 border-gray-200 dark:border-gray-700"
+      />
+      <p class="mt-2 text-gray-600 dark:text-gray-300">
+        Scan QR ini di WhatsApp Web
+      </p>
     </div>
   </div>
 </template>
@@ -121,101 +149,3 @@ const fetchQrCode = async () => {
   poll();
 };
 </script>
-
-<style scoped>
-.scanqr-container {
-  max-width: 500px;
-  margin: 40px auto;
-  padding: 2rem;
-  background: var(--dashboard-bg, #fff);
-  border-radius: 10px;
-  box-shadow: 0 2px 16px rgba(0, 0, 0, 0.08);
-  text-align: center;
-}
-.scanqr-container form {
-  margin-bottom: 2rem;
-}
-.scanqr-container input {
-  padding: 0.5rem;
-  border: 1px solid #ccc;
-  border-radius: 4px;
-  margin-right: 1rem;
-  width: 200px;
-}
-.session-button {
-  padding: 0.5rem 1.2rem;
-  background: #007bff;
-  color: #fff;
-  border: none;
-  border-radius: 4px;
-  font-weight: bold;
-  cursor: pointer;
-  transition: background 0.2s;
-  margin-right: 0.5rem;
-}
-.session-button:hover {
-  background: #0056b3;
-}
-.qr-button {
-  padding: 0.5rem 1.2rem;
-  background: #42b983;
-  color: #fff;
-  border: none;
-  border-radius: 4px;
-  font-weight: bold;
-  cursor: pointer;
-  transition: background 0.2s;
-}
-.qr-button:hover {
-  background: #369870;
-}
-.qr-image {
-  margin-top: 2rem;
-}
-.qr-image img {
-  width: 220px;
-  height: 220px;
-  border-radius: 12px;
-  border: 2px solid #eee;
-}
-.loading {
-  color: #888;
-  margin-top: 1rem;
-}
-.error {
-  color: #e74c3c;
-  margin-top: 1rem;
-}
-.success {
-  color: #2ecc71;
-  margin-top: 1rem;
-}
-.breadcrumb {
-  margin-bottom: 1.5rem;
-  font-size: 0.95rem;
-}
-.breadcrumb a {
-  color: #42b983;
-  text-decoration: none;
-}
-.breadcrumb a:hover {
-  text-decoration: underline;
-}
-@media (prefers-color-scheme: dark) {
-  .scanqr-container {
-    background: var(--dashboard-bg-dark, #23272f);
-    color: #fff;
-  }
-  .scanqr-container input {
-    background: #181a20;
-    color: #fff;
-    border-color: #444;
-  }
-  .qr-image img {
-    border-color: #444;
-  }
-  .breadcrumb a {
-    color: #7fffd4;
-  }
-}
-</style>

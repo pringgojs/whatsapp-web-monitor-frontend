@@ -32,24 +32,61 @@
       <h2>Detail Client: {{ clientId }}</h2>
       <div v-if="activeMenu === 'send-message'">
         <h3>Kirim Pesan</h3>
-        <form @submit.prevent="sendMessage">
-          <input v-model="to" placeholder="Nomor Tujuan (62...)" required />
+        <form
+          @submit.prevent="sendMessage"
+          class="flex flex-col gap-3 max-w-md mt-4"
+        >
+          <input
+            v-model="to"
+            placeholder="Nomor Tujuan (62...)"
+            required
+            class="px-4 py-2 rounded border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-emerald-400"
+          />
           <textarea
             v-model="message"
             placeholder="Isi Pesan"
             required
-          ></textarea>
-          <button type="submit">Kirim</button>
+            class="px-4 py-2 rounded border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-emerald-400 min-h-[90px]"
+          />
+          <button
+            type="submit"
+            class="py-2 rounded bg-emerald-600 hover:bg-emerald-700 text-white font-semibold transition-colors mt-2"
+          >
+            Kirim
+          </button>
         </form>
-        <div v-if="msgResult" class="result">{{ msgResult }}</div>
+        <div
+          v-if="msgResult"
+          class="mt-3 text-emerald-600 dark:text-emerald-400"
+        >
+          {{ msgResult }}
+        </div>
       </div>
       <div v-else-if="activeMenu === 'webhook'">
         <h3>Konfigurasi Webhook</h3>
-        <form @submit.prevent="saveWebhook">
-          <input v-model="webhookUrl" placeholder="Webhook URL" required />
-          <button type="submit">Simpan</button>
+        <form
+          @submit.prevent="saveWebhook"
+          class="flex flex-col gap-3 max-w-md mt-4"
+        >
+          <input
+            v-model="webhookUrl"
+            placeholder="Webhook URL"
+            required
+            class="px-4 py-2 rounded border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-emerald-400"
+          />
+          <button
+            type="submit"
+            class="py-2 rounded bg-emerald-600 hover:bg-emerald-700 text-white font-semibold transition-colors mt-2"
+          >
+            Simpan
+          </button>
         </form>
-        <div v-if="webhookResult" class="result">{{ webhookResult }}</div>
+        <div
+          v-if="webhookResult"
+          class="mt-3 text-emerald-600 dark:text-emerald-400"
+        >
+          {{ webhookResult }}
+        </div>
       </div>
       <div v-else-if="activeMenu === 'group'">
         <h3>Manajemen Group</h3>
@@ -155,183 +192,4 @@ const fetchGroups = async () => {
 };
 </script>
 
-<style scoped>
-.client-detail-container {
-  display: flex;
-  min-height: 400px;
-  background: var(--dashboard-bg, #fff);
-  border-radius: 10px;
-  box-shadow: 0 2px 16px rgba(0, 0, 0, 0.08);
-  margin: 40px auto;
-  max-width: 900px;
-}
-.sidebar {
-  width: 200px;
-  background: #23272f;
-  color: #fff;
-  border-top-left-radius: 10px;
-  border-bottom-left-radius: 10px;
-  padding: 2rem 0.5rem;
-}
-.sidebar-header {
-  margin-bottom: 1.5rem;
-  padding: 0.5rem 1rem 1rem 1rem;
-  border-bottom: 1px solid #4442;
-  text-align: left;
-}
-.client-label {
-  font-size: 0.95rem;
-  color: #aaa;
-}
-.client-id {
-  font-weight: bold;
-  font-size: 1.1rem;
-  margin-bottom: 0.2rem;
-  color: #fff;
-  word-break: break-all;
-}
-.wa-label {
-  font-size: 0.95rem;
-  color: #aaa;
-  margin-top: 0.5rem;
-}
-.wa-number {
-  font-size: 1.05rem;
-  color: #7fffd4;
-  font-weight: bold;
-  word-break: break-all;
-}
-.sidebar ul {
-  list-style: none;
-  padding: 0;
-}
-.sidebar li {
-  padding: 1rem 1.2rem;
-  cursor: pointer;
-  border-radius: 6px;
-  margin-bottom: 0.5rem;
-  transition: background 0.2s;
-}
-.sidebar li.active,
-.sidebar li:hover {
-  background: #42b983;
-  color: #fff;
-}
-.content {
-  flex: 1;
-  padding: 2rem;
-}
-form {
-  display: flex;
-  flex-direction: column;
-  gap: 1rem;
-  max-width: 400px;
-  margin: 1.5rem 0 0 0;
-}
-input,
-textarea {
-  padding: 0.7rem 1rem;
-  border: 1px solid #ccc;
-  border-radius: 6px;
-  font-size: 1rem;
-  background: #fff;
-  color: #23272f;
-  transition: border 0.2s, background 0.2s;
-}
-input:focus,
-textarea:focus {
-  border-color: #42b983;
-  outline: none;
-  background: #f9f9f9;
-}
-button[type="submit"] {
-  background: #42b983;
-  color: #fff;
-  border: none;
-  border-radius: 6px;
-  padding: 0.7rem 1.2rem;
-  font-weight: bold;
-  font-size: 1rem;
-  cursor: pointer;
-  transition: background 0.2s;
-  margin-top: 0.5rem;
-}
-button[type="submit"]:hover {
-  background: #369870;
-}
-.result {
-  margin-top: 1rem;
-  color: #27ae60;
-}
-.error {
-  color: #e74c3c;
-  margin-top: 1rem;
-}
-@media (max-width: 700px) {
-  .client-detail-container {
-    flex-direction: column;
-  }
-  .sidebar {
-    width: 100%;
-    border-radius: 10px 10px 0 0;
-    padding: 1rem;
-  }
-  .content {
-    padding: 1rem;
-  }
-  form {
-    max-width: 100%;
-  }
-}
-@media (prefers-color-scheme: dark) {
-  .client-detail-container {
-    background: var(--dashboard-bg-dark, #23272f);
-    color: #fff;
-  }
-  .sidebar {
-    background: #181b20;
-    color: #fff;
-  }
-  .sidebar-header {
-    border-bottom: 1px solid #444;
-  }
-  .client-id {
-    color: #fff;
-  }
-  .wa-number {
-    color: #7fffd4;
-  }
-  .sidebar li.active,
-  .sidebar li:hover {
-    background: #42b983;
-    color: #fff;
-  }
-  .content {
-    background: #23272f;
-    color: #fff;
-  }
-  input,
-  textarea {
-    background: #23272f;
-    color: #fff;
-    border: 1px solid #444;
-  }
-  input::placeholder,
-  textarea::placeholder {
-    color: #aaa;
-  }
-  button[type="submit"] {
-    background: #42b983;
-    color: #fff;
-  }
-  button[type="submit"]:hover {
-    background: #369870;
-  }
-  .result {
-    color: #7fffaf;
-  }
-  .error {
-    color: #ff7b7b;
-  }
-}
-</style>
+<!-- Tailwind migration: form section only. -->

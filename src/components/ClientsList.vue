@@ -1,152 +1,281 @@
 <template>
-  <div class="clients-container">
-    <nav class="breadcrumb">
-      <router-link to="/">Home</router-link> / Clients
+  <div
+    class="max-w-3xl mx-auto mt-10 p-6 bg-white dark:bg-gray-900 rounded-xl shadow-lg"
+  >
+    <nav
+      class="mb-6 text-sm text-gray-500 dark:text-gray-300 flex items-center gap-1"
+    >
+      <router-link to="/" class="text-primary-600 hover:underline"
+        >Home</router-link
+      >
+      <span>/</span>
+      <span>Clients</span>
     </nav>
-    <div v-if="showQRModal" class="modal">
-      <div class="modal-content">
-        <h3>Scan WhatsApp QR</h3>
-        <div v-if="qrLoading" class="loading">Loading QR...</div>
-        <div v-else-if="qrImage">
-          <img :src="qrImage" alt="QR Code" style="max-width: 250px" />
+    <div
+      v-if="showQRModal"
+      class="fixed inset-0 bg-black bg-opacity-40 flex items-center justify-center z-50"
+    >
+      <div
+        class="bg-white dark:bg-gray-800 rounded-lg shadow-xl p-6 min-w-[300px] text-center relative"
+      >
+        <h3 class="text-lg font-semibold mb-4">Scan WhatsApp QR</h3>
+        <div v-if="qrLoading" class="text-gray-500 dark:text-gray-300 mb-4">
+          Loading QR...
         </div>
-        <div v-else class="error">QR not available.</div>
-        <button @click="closeQRModal">Tutup</button>
+        <div v-else-if="qrImage" class="flex justify-center mb-4">
+          <img :src="qrImage" alt="QR Code" class="max-w-xs mx-auto" />
+        </div>
+        <div v-else class="text-red-500 mb-4">QR not available.</div>
+        <button
+          @click="closeQRModal"
+          class="mt-2 px-4 py-2 rounded bg-primary-600 text-white font-semibold hover:bg-primary-700 transition"
+        >
+          Tutup
+        </button>
       </div>
     </div>
-    <h1>Daftar Client WhatsApp Terdaftar</h1>
-    <button @click="fetchClients" class="refresh-btn">Refresh</button>
-    <button @click="showAddClient = true" class="add-btn">Tambah Client</button>
-    <div v-if="showAddClient" class="modal">
-      <div class="modal-content">
-        <h3>Tambah Client</h3>
-        <form @submit.prevent="addClient">
+    <h1 class="text-2xl font-bold mb-4">Daftar Client WhatsApp Terdaftar</h1>
+    <div class="flex flex-wrap gap-2 mb-4">
+      <button
+        @click="fetchClients"
+        class="px-4 py-2 bg-emerald-600 text-white rounded font-semibold hover:bg-emerald-700 transition"
+      >
+        Refresh
+      </button>
+      <button
+        @click="showAddClient = true"
+        class="px-4 py-2 bg-blue-600 text-white rounded font-semibold hover:bg-blue-700 transition"
+      >
+        Tambah Client
+      </button>
+    </div>
+    <div
+      v-if="showAddClient"
+      class="fixed inset-0 bg-black bg-opacity-40 flex items-center justify-center z-50"
+    >
+      <div
+        class="bg-white dark:bg-gray-800 rounded-lg shadow-xl p-6 min-w-[300px] text-center relative"
+      >
+        <h3 class="text-lg font-semibold mb-4">Tambah Client</h3>
+        <form @submit.prevent="addClient" class="flex flex-col gap-3 mt-2">
           <input
             v-model="newClientId"
             type="text"
             placeholder="Client ID"
             required
+            class="px-4 py-2 rounded border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-900 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-primary-500"
           />
-          <button type="submit">Tambah</button>
-          <button type="button" @click="showAddClient = false">Batal</button>
-        </form>
-        <div v-if="addError" class="error">{{ addError }}</div>
-      </div>
-    </div>
-    <div v-if="loading" class="loading">Memuat data...</div>
-    <div v-if="error" class="error">{{ error }}</div>
-    <table v-if="clients.length" class="clients-table">
-      <thead>
-        <tr>
-          <th>#</th>
-          <th>Client ID</th>
-          <th>Status</th>
-          <th>Aksi</th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr v-for="(client, idx) in clients" :key="client">
-          <td>{{ idx + 1 }}</td>
-          <td>
-            <span v-if="editClientId !== client">{{ client }}</span>
-            <input
-              v-else
-              v-model="editClientIdInput"
-              type="text"
-              :disabled="
-                statuses[client] === 'ready' || statuses[client] === 'connected'
-              "
-            />
-          </td>
-          <td>
-            <span v-if="statuses[client]">{{ statuses[client] }}</span>
-            <span v-else class="loading">Memuat...</span>
-          </td>
-          <td>
-            <router-link
-              :to="{ name: 'ClientDetail', params: { clientId: client } }"
-              class="detail-link"
-              >Detail</router-link
-            >
+          <div class="flex gap-2 justify-center">
             <button
-              v-if="editClientId !== client"
-              @click="startEdit(client)"
-              :disabled="
-                statuses[client] === 'ready' || statuses[client] === 'connected'
-              "
+              type="submit"
+              class="px-4 py-2 bg-emerald-600 text-white rounded font-semibold hover:bg-emerald-700 transition"
             >
-              Edit
+              Tambah
             </button>
             <button
-              v-else
-              @click="saveEdit(client)"
-              :disabled="
-                statuses[client] === 'ready' || statuses[client] === 'connected'
-              "
+              type="button"
+              @click="showAddClient = false"
+              class="px-4 py-2 bg-red-500 text-white rounded font-semibold hover:bg-red-700 transition"
             >
-              Simpan
-            </button>
-            <button v-if="editClientId === client" @click="cancelEdit">
               Batal
             </button>
-            <button @click="confirmDelete(client)" class="delete-btn">
-              Hapus
-            </button>
-            <button
-              v-if="
-                statuses[client] === 'ready' || statuses[client] === 'connected'
-              "
-              @click="confirmDisconnect(client, 'logout')"
-              class="disconnect-btn"
-            >
-              Logout (QR Baru)
-            </button>
-            <button
-              v-if="
-                statuses[client] === 'ready' || statuses[client] === 'connected'
-              "
-              @click="confirmDisconnect(client, 'destroy')"
-              class="disconnect-btn destroy"
-            >
-              Putus Koneksi (Session Tetap)
-            </button>
-            <button
-              v-if="
-                statuses[client] === 'disconnected' ||
-                statuses[client] === 'destroyed'
-              "
-              @click="reconnectClient(client)"
-              class="reconnect-btn"
-            >
-              Reconnect
-            </button>
-            <button
-              v-if="statuses[client] === 'qr'"
-              @click="showQR(client)"
-              class="reconnect-btn"
-            >
-              Scan QR
-            </button>
-          </td>
-        </tr>
-      </tbody>
-    </table>
-    <div v-else-if="!loading && !error">Belum ada client terdaftar.</div>
-  </div>
-  <div v-if="showDeleteConfirm" class="modal">
-    <div class="modal-content">
-      <h3>Konfirmasi Hapus Client</h3>
-      <p>{{ deleteWarning }}</p>
-      <button @click="doDeleteClient">Ya, Hapus</button>
-      <button @click="showDeleteConfirm = false">Batal</button>
+          </div>
+        </form>
+        <div v-if="addError" class="text-red-500 mt-2">{{ addError }}</div>
+      </div>
+    </div>
+    <div v-if="loading" class="text-gray-500 dark:text-gray-300 mt-4">
+      Memuat data...
+    </div>
+    <div v-if="error" class="text-red-500 mt-4">{{ error }}</div>
+    <div v-if="clients.length">
+      <div class="overflow-x-auto rounded-lg shadow mt-4">
+        <table class="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
+          <thead class="bg-gray-100 dark:bg-gray-800">
+            <tr>
+              <th
+                class="px-4 py-2 text-left font-semibold text-gray-700 dark:text-gray-200"
+              >
+                #
+              </th>
+              <th
+                class="px-4 py-2 text-left font-semibold text-gray-700 dark:text-gray-200"
+              >
+                Client ID
+              </th>
+              <th
+                class="px-4 py-2 text-left font-semibold text-gray-700 dark:text-gray-200"
+              >
+                Status
+              </th>
+              <th
+                class="px-4 py-2 text-left font-semibold text-gray-700 dark:text-gray-200"
+              >
+                Aksi
+              </th>
+            </tr>
+          </thead>
+          <tbody
+            class="bg-white dark:bg-gray-900 divide-y divide-gray-100 dark:divide-gray-800"
+          >
+            <tr v-for="(client, idx) in clients" :key="client">
+              <td class="px-4 py-2">{{ idx + 1 }}</td>
+              <td class="px-4 py-2">
+                <span v-if="editClientId !== client">{{ client }}</span>
+                <input
+                  v-else
+                  v-model="editClientIdInput"
+                  type="text"
+                  :disabled="
+                    statuses[client] === 'ready' ||
+                    statuses[client] === 'connected'
+                  "
+                  class="px-2 py-1 rounded border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-900 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-primary-500"
+                />
+              </td>
+              <td class="px-4 py-2">
+                <span v-if="statuses[client]">{{ statuses[client] }}</span>
+                <span v-else class="text-gray-400">Memuat...</span>
+              </td>
+              <td class="px-4 py-2 flex flex-wrap gap-1">
+                <router-link
+                  :to="{ name: 'ClientDetail', params: { clientId: client } }"
+                  class="bg-gray-800 text-white rounded px-2 py-1 font-semibold hover:bg-emerald-600 transition"
+                  >Detail</router-link
+                >
+                <button
+                  v-if="editClientId !== client"
+                  @click="startEdit(client)"
+                  :disabled="
+                    statuses[client] === 'ready' ||
+                    statuses[client] === 'connected'
+                  "
+                  class="px-2 py-1 bg-yellow-500 text-white rounded font-semibold hover:bg-yellow-600 disabled:opacity-60 disabled:cursor-not-allowed transition"
+                >
+                  Edit
+                </button>
+                <button
+                  v-else
+                  @click="saveEdit(client)"
+                  :disabled="
+                    statuses[client] === 'ready' ||
+                    statuses[client] === 'connected'
+                  "
+                  class="px-2 py-1 bg-emerald-600 text-white rounded font-semibold hover:bg-emerald-700 disabled:opacity-60 disabled:cursor-not-allowed transition"
+                >
+                  Simpan
+                </button>
+                <button
+                  v-if="editClientId === client"
+                  @click="cancelEdit"
+                  class="px-2 py-1 bg-gray-500 text-white rounded font-semibold hover:bg-gray-700 transition"
+                >
+                  Batal
+                </button>
+                <button
+                  @click="confirmDelete(client)"
+                  class="px-2 py-1 bg-red-500 text-white rounded font-semibold hover:bg-red-700 transition"
+                >
+                  Hapus
+                </button>
+                <button
+                  v-if="
+                    statuses[client] === 'ready' ||
+                    statuses[client] === 'connected'
+                  "
+                  @click="confirmDisconnect(client, 'logout')"
+                  class="px-2 py-1 bg-orange-500 text-white rounded font-semibold hover:bg-orange-600 transition"
+                >
+                  Logout (QR Baru)
+                </button>
+                <button
+                  v-if="
+                    statuses[client] === 'ready' ||
+                    statuses[client] === 'connected'
+                  "
+                  @click="confirmDisconnect(client, 'destroy')"
+                  class="px-2 py-1 bg-gray-700 text-white rounded font-semibold hover:bg-gray-900 transition"
+                >
+                  Putus Koneksi (Session Tetap)
+                </button>
+                <button
+                  v-if="
+                    statuses[client] === 'disconnected' ||
+                    statuses[client] === 'destroyed'
+                  "
+                  @click="reconnectClient(client)"
+                  class="px-2 py-1 bg-green-600 text-white rounded font-semibold hover:bg-green-800 transition"
+                >
+                  Reconnect
+                </button>
+                <button
+                  v-if="statuses[client] === 'qr'"
+                  @click="showQR(client)"
+                  class="px-2 py-1 bg-blue-600 text-white rounded font-semibold hover:bg-blue-800 transition"
+                >
+                  Scan QR
+                </button>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+    <div
+      v-else-if="!loading && !error"
+      class="text-gray-500 dark:text-gray-400 mt-8 text-center"
+    >
+      Belum ada client terdaftar.
     </div>
   </div>
-  <div v-if="showDisconnectConfirm" class="modal">
-    <div class="modal-content">
-      <h3>Konfirmasi Disconnect Client</h3>
-      <p>{{ disconnectWarning }}</p>
-      <button @click="doDisconnectClient">Ya, Disconnect</button>
-      <button @click="showDisconnectConfirm = false">Batal</button>
+  <div
+    v-if="showDeleteConfirm"
+    class="fixed inset-0 bg-black bg-opacity-40 flex items-center justify-center z-50"
+  >
+    <div
+      class="bg-white dark:bg-gray-800 rounded-lg shadow-xl p-6 min-w-[300px] text-center relative"
+    >
+      <h3 class="text-lg font-semibold mb-4">Konfirmasi Hapus Client</h3>
+      <p class="mb-4">{{ deleteWarning }}</p>
+      <div class="flex gap-2 justify-center">
+        <button
+          @click="doDeleteClient"
+          class="px-4 py-2 bg-red-500 text-white rounded font-semibold hover:bg-red-700 transition"
+        >
+          Ya, Hapus
+        </button>
+        <button
+          @click="showDeleteConfirm = false"
+          class="px-4 py-2 bg-gray-500 text-white rounded font-semibold hover:bg-gray-700 transition"
+        >
+          Batal
+        </button>
+      </div>
+    </div>
+  </div>
+  <div
+    v-if="showDisconnectConfirm"
+    class="fixed inset-0 bg-black bg-opacity-40 flex items-center justify-center z-50"
+  >
+    <div
+      class="bg-white dark:bg-gray-800 rounded-lg shadow-xl p-6 min-w-[300px] text-center relative"
+    >
+      <h3 class="text-lg font-semibold mb-4">Konfirmasi Disconnect Client</h3>
+      <p class="mb-4">{{ disconnectWarning }}</p>
+      <div class="flex gap-2 justify-center">
+        <button
+          @click="doDisconnectClient"
+          class="px-4 py-2 bg-orange-500 text-white rounded font-semibold hover:bg-orange-600 transition"
+        >
+          Ya, Disconnect
+        </button>
+        <button
+          @click="showDisconnectConfirm = false"
+          class="px-4 py-2 bg-gray-500 text-white rounded font-semibold hover:bg-gray-700 transition"
+        >
+          Batal
+        </button>
+      </div>
     </div>
   </div>
 </template>
@@ -436,180 +565,3 @@ watch(clients, (newClients) => {
   newClients.forEach(fetchStatus);
 });
 </script>
-
-<style scoped>
-.clients-container {
-  max-width: 700px;
-  margin: 40px auto;
-  padding: 2rem;
-  background: var(--dashboard-bg, #fff);
-  border-radius: 10px;
-  box-shadow: 0 2px 16px rgba(0, 0, 0, 0.08);
-}
-.refresh-btn {
-  margin-bottom: 1rem;
-  padding: 0.5rem 1.2rem;
-  background: #42b983;
-  color: #fff;
-  border: none;
-  border-radius: 4px;
-  font-weight: bold;
-  cursor: pointer;
-  transition: background 0.2s;
-}
-.refresh-btn:hover {
-  background: #369870;
-}
-.add-btn {
-  margin-bottom: 1rem;
-  padding: 0.5rem 1.2rem;
-  background: #007bff;
-  color: #fff;
-  border: none;
-  border-radius: 4px;
-  font-weight: bold;
-  cursor: pointer;
-  transition: background 0.2s;
-  margin-right: 0.5rem;
-}
-.add-btn:hover {
-  background: #0056b3;
-}
-.clients-table {
-  width: 100%;
-  border-collapse: collapse;
-  margin-top: 1rem;
-}
-.clients-table th,
-.clients-table td {
-  border: 1px solid #eee;
-  padding: 0.7rem 1rem;
-  text-align: left;
-}
-.clients-table th {
-  background: #f9f9f9;
-}
-.loading {
-  color: #888;
-  margin-top: 1rem;
-}
-.error {
-  color: #e74c3c;
-  margin-top: 1rem;
-}
-.delete-btn {
-  background: #e74c3c;
-  color: #fff;
-  border: none;
-  border-radius: 4px;
-  padding: 0.3rem 0.8rem;
-  font-weight: bold;
-  cursor: pointer;
-  margin-left: 0.5rem;
-}
-.delete-btn:hover {
-  background: #c0392b;
-}
-.disconnect-btn {
-  background: #f39c12;
-  color: #fff;
-  border: none;
-  border-radius: 4px;
-  padding: 0.3rem 0.8rem;
-  font-weight: bold;
-  cursor: pointer;
-  margin-left: 0.5rem;
-}
-.disconnect-btn.destroy {
-  background: #6c757d;
-}
-.disconnect-btn.destroy:hover {
-  background: #495057;
-}
-.disconnect-btn:hover {
-  background: #b9770e;
-}
-.reconnect-btn {
-  background: #27ae60;
-  color: #fff;
-  border: none;
-  border-radius: 4px;
-  padding: 0.3rem 0.8rem;
-  font-weight: bold;
-  cursor: pointer;
-  margin-left: 0.5rem;
-}
-.reconnect-btn[disabled],
-.reconnect-btn:disabled {
-  opacity: 0.6;
-  cursor: not-allowed;
-}
-.reconnect-btn:hover {
-  background: #219150;
-}
-.modal {
-  position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background: rgba(0, 0, 0, 0.3);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  z-index: 1000;
-}
-.modal-content {
-  background: #fff;
-  padding: 2rem;
-  border-radius: 8px;
-  min-width: 300px;
-  box-shadow: 0 2px 16px rgba(0, 0, 0, 0.15);
-  text-align: center;
-}
-.breadcrumb {
-  margin-bottom: 1.5rem;
-  font-size: 0.95rem;
-}
-.breadcrumb a {
-  color: #42b983;
-  text-decoration: none;
-}
-.breadcrumb a:hover {
-  text-decoration: underline;
-}
-.detail-link {
-  background: #23272f;
-  color: #fff;
-  border-radius: 4px;
-  padding: 0.3rem 0.8rem;
-  margin-right: 0.5rem;
-  text-decoration: none;
-  font-weight: bold;
-  transition: background 0.2s;
-}
-.detail-link:hover {
-  background: #42b983;
-  color: #fff;
-}
-@media (prefers-color-scheme: dark) {
-  .clients-container {
-    background: var(--dashboard-bg-dark, #23272f);
-    color: #fff;
-  }
-  .clients-table th {
-    background: #23272f;
-    color: #fff;
-  }
-  .clients-table td {
-    border-color: #444;
-  }
-  .modal-content {
-    background: #23272f;
-    color: #fff;
-  }
-  .breadcrumb a {
-    color: #7fffd4;
-  }
-}
-</style>
