@@ -141,21 +141,39 @@
           Konfigurasi Webhook
         </h3>
         <form
-          @submit.prevent="saveWebhook"
+          @submit.prevent="saveWebhookConfig"
           class="flex flex-col gap-3 max-w-md mt-4"
         >
+          <label class="text-sm font-medium text-gray-600 dark:text-gray-300"
+            >Webhook URL</label
+          >
           <input
             v-model="webhookUrl"
-            placeholder="Webhook URL"
+            placeholder="https://your-webhook-url.com/endpoint"
             required
             class="px-4 py-2 rounded border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-emerald-400"
           />
-          <button
-            type="submit"
-            class="py-2 rounded bg-emerald-600 hover:bg-emerald-700 text-white font-semibold transition-colors mt-2"
+          <label
+            class="text-sm font-medium text-gray-600 dark:text-gray-300 mt-2"
+            >Custom Headers (JSON)</label
           >
-            Simpan
-          </button>
+          <textarea
+            v-model="webhookHeaders"
+            rows="4"
+            class="w-full border rounded px-3 py-2 text-sm bg-transparent font-mono"
+            placeholder='{"Authorization": "Bearer ..."}'
+          ></textarea>
+          <div v-if="webhookHeadersError" class="text-red-500 text-xs">
+            {{ webhookHeadersError }}
+          </div>
+          <div class="flex gap-2 justify-end mt-2">
+            <button
+              type="submit"
+              class="inline-flex items-center gap-1 px-4 py-2 rounded-lg bg-emerald-50 text-emerald-700 border border-emerald-100 hover:bg-emerald-100 transition text-sm font-semibold shadow-sm"
+            >
+              Simpan
+            </button>
+          </div>
         </form>
       </div>
       <div v-else-if="activeMenu === 'group'">
@@ -303,34 +321,12 @@ const sendMessage = async () => {
 
 // Webhook
 const webhookUrl = ref("");
-const saveWebhook = async () => {
+const webhookHeaders = ref("");
+const webhookHeadersError = ref("");
+const fetchWebhookConfig = async () => {
   try {
     const token = localStorage.getItem("token");
-    const res = await fetch(
-      `${API_BASE_URL}/sessions/${clientId.value}/webhook`,
-      {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
-        },
-        body: JSON.stringify({ webhookUrl: webhookUrl.value }),
-      }
-    );
-    const data = await res.json();
-    if (res.ok) {
-      notification("success", "Webhook berhasil disimpan.");
-    } else {
-      notification("error", data.error || "Gagal menyimpan webhook.");
-    }
-  } catch (e) {
-    notification("error", "Gagal menyimpan webhook.");
-  }
-};
-onMounted(async () => {
-  // Fetch webhook URL dari backend
-  try {
-    const token = localStorage.getItem("token");
+    // Fetch URL
     const res = await fetch(
       `${API_BASE_URL}/sessions/${clientId.value}/webhook`,
       {
@@ -338,15 +334,69 @@ onMounted(async () => {
       }
     );
     const data = await res.json();
-    if (res.ok && data.webhookUrl) {
-      webhookUrl.value = data.webhookUrl;
-    } else {
-      webhookUrl.value = "";
-    }
-  } catch {
+    webhookUrl.value = data.webhookUrl || "";
+    // Fetch headers
+    const res2 = await fetch(
+      `${API_BASE_URL}/sessions/${clientId.value}/webhook-headers`,
+      {
+        headers: { Authorization: `Bearer ${token}` },
+      }
+    );
+    const data2 = await res2.json();
+    webhookHeaders.value = data2.headers
+      ? JSON.stringify(data2.headers, null, 2)
+      : "";
+  } catch (e) {
     webhookUrl.value = "";
+    webhookHeaders.value = "";
   }
-});
+};
+
+const saveWebhookConfig = async () => {
+  try {
+    // Save URL
+    const token = localStorage.getItem("token");
+    await fetch(`${API_BASE_URL}/sessions/${clientId.value}/webhook`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+      body: JSON.stringify({ webhookUrl: webhookUrl.value }),
+    });
+    // Save headers
+    let headersObj = {};
+    webhookHeadersError.value = "";
+    if (webhookHeaders.value) {
+      try {
+        headersObj = JSON.parse(webhookHeaders.value);
+      } catch (e) {
+        webhookHeadersError.value = "Format JSON header tidak valid";
+        return;
+      }
+    }
+    await fetch(`${API_BASE_URL}/sessions/${clientId.value}/webhook-headers`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+      body: JSON.stringify({ headers: headersObj }),
+    });
+    notification("success", "Webhook config berhasil disimpan");
+  } catch (e) {
+    notification("error", "Gagal menyimpan webhook config");
+  }
+};
+
+// Fetch config when menu is opened or client changes
+watch(
+  [activeMenu, clientId],
+  ([menu, id], [oldMenu, oldId]) => {
+    if (menu === "webhook") fetchWebhookConfig();
+  },
+  { immediate: true }
+);
 
 // Group
 const groups = ref([]);
