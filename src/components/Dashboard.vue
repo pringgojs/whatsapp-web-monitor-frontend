@@ -6,6 +6,9 @@
         <li><router-link to="/scan-qr">Scan QR Code</router-link></li>
         <li><router-link to="/status">Cek Status Client</router-link></li>
         <li><router-link to="/clients">Daftar Client</router-link></li>
+        <li v-if="isAdmin">
+          <router-link to="/users">Manajemen User</router-link>
+        </li>
         <li><a href="#" @click.prevent="logout">Logout</a></li>
       </ul>
     </nav>
@@ -23,7 +26,16 @@
 <script setup>
 import { useRouter } from "vue-router";
 import { API_BASE_URL } from "../config";
+import { ref } from "vue";
 const router = useRouter();
+const isAdmin = ref(false);
+try {
+  const token = localStorage.getItem("token");
+  if (token) {
+    const payload = JSON.parse(atob(token.split(".")[1]));
+    isAdmin.value = payload.role === "admin";
+  }
+} catch {}
 function logout() {
   localStorage.removeItem("token");
   router.push("/login");

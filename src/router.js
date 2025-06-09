@@ -7,6 +7,7 @@ import ClientStatus from "./components/ClientStatus.vue";
 import ClientsList from "./components/ClientsList.vue";
 import Register from "./components/Register.vue";
 import ClientDetail from "./components/ClientDetail.vue";
+import UserManagement from "./components/UserManagement.vue";
 
 const routes = [
   { path: "/", name: "Dashboard", component: Dashboard },
@@ -20,6 +21,12 @@ const routes = [
     name: "ClientDetail",
     component: ClientDetail,
     meta: { requiresAuth: true },
+  },
+  {
+    path: "/users",
+    name: "UserManagement",
+    component: UserManagement,
+    meta: { requiresAuth: true, requiresAdmin: true },
   },
   // Rute lain seperti monitoring, dsb akan ditambahkan nanti
 ];
