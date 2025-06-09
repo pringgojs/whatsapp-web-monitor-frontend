@@ -1,6 +1,6 @@
 <template>
   <div
-    class="max-w-3xl mx-auto mt-10 p-6 bg-white dark:bg-gray-900 rounded-xl shadow-lg"
+    class="max-w-3xl mx-auto mt-10 p-6 bg-white dark:bg-gray-900 rounded-2xl shadow-xl"
   >
     <nav
       class="mb-6 text-sm text-gray-500 dark:text-gray-300 flex items-center gap-1"
@@ -54,28 +54,30 @@
       class="fixed inset-0 bg-black bg-opacity-40 flex items-center justify-center z-50"
     >
       <div
-        class="bg-white dark:bg-gray-800 rounded-lg shadow-xl p-6 min-w-[300px] text-center relative"
+        class="bg-white dark:bg-gray-800 rounded-xl shadow-2xl p-6 min-w-[320px] text-center relative border border-gray-200 dark:border-gray-700"
       >
         <h3 class="text-lg font-semibold mb-4">Tambah Client</h3>
         <form @submit.prevent="addClient" class="flex flex-col gap-3 mt-2">
-          <input
+          <PrelineInput
             v-model="newClientId"
             type="text"
             placeholder="Client ID"
+            :error="addError"
+            :disabled="loading"
+            class="w-full"
             required
-            class="px-4 py-2 rounded border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-900 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-primary-500"
           />
-          <div class="flex gap-2 justify-center">
+          <div class="flex gap-2 justify-center mt-2">
             <button
               type="submit"
-              class="px-4 py-2 bg-emerald-600 text-white rounded font-semibold hover:bg-emerald-700 transition"
+              class="px-4 py-2 bg-emerald-600 text-white rounded-lg font-semibold hover:bg-emerald-700 transition-all shadow-sm focus:outline-none focus:ring-2 focus:ring-emerald-400"
             >
               Tambah
             </button>
             <button
               type="button"
               @click="showAddClient = false"
-              class="px-4 py-2 bg-red-500 text-white rounded font-semibold hover:bg-red-700 transition"
+              class="px-4 py-2 bg-red-500 text-white rounded-lg font-semibold hover:bg-red-700 transition-all shadow-sm focus:outline-none focus:ring-2 focus:ring-red-400"
             >
               Batal
             </button>
@@ -89,62 +91,72 @@
     </div>
     <div v-if="error" class="text-red-500 mt-4">{{ error }}</div>
     <div v-if="clients.length">
-      <div class="overflow-x-auto rounded-lg shadow mt-4">
-        <table class="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
-          <thead class="bg-gray-100 dark:bg-gray-800">
-            <tr>
-              <th
-                class="px-4 py-2 text-left font-semibold text-gray-700 dark:text-gray-200"
-              >
-                #
-              </th>
-              <th
-                class="px-4 py-2 text-left font-semibold text-gray-700 dark:text-gray-200"
-              >
-                Client ID
-              </th>
-              <th
-                class="px-4 py-2 text-left font-semibold text-gray-700 dark:text-gray-200"
-              >
-                Status
-              </th>
-              <th
-                class="px-4 py-2 text-left font-semibold text-gray-700 dark:text-gray-200"
-              >
-                Aksi
-              </th>
-            </tr>
-          </thead>
-          <tbody
-            class="bg-white dark:bg-gray-900 divide-y divide-gray-100 dark:divide-gray-800"
+      <div class="rounded-xl shadow mt-4">
+        <div class="flex flex-col w-full gap-0.5">
+          <div
+            class="grid grid-cols-5 bg-gray-50 dark:bg-gray-800 rounded-t-xl font-semibold text-gray-700 dark:text-gray-200 sticky top-0 z-10"
           >
-            <tr v-for="(client, idx) in clients" :key="client">
-              <td class="px-4 py-2 text-gray-900 dark:text-white">
-                {{ idx + 1 }}
-              </td>
-              <td class="px-4 py-2 text-gray-900 dark:text-white">
-                <span v-if="editClientId !== client">{{ client }}</span>
-                <input
-                  v-else
-                  v-model="editClientIdInput"
-                  type="text"
-                  :disabled="
-                    statuses[client] === 'ready' ||
-                    statuses[client] === 'connected'
-                  "
-                  class="px-2 py-1 rounded border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-900 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-primary-500"
-                />
-              </td>
-              <td class="px-4 py-2 text-gray-900 dark:text-white">
-                <span v-if="statuses[client]">{{ statuses[client] }}</span>
-                <span v-else class="text-gray-400">Memuat...</span>
-              </td>
-              <td
-                class="px-4 py-2 flex flex-wrap gap-1 text-gray-900 dark:text-white"
-              >
+            <div class="px-4 py-3">#</div>
+            <div class="px-4 py-3">Client ID</div>
+            <div class="px-4 py-3">Status</div>
+            <div class="px-4 py-3">Nomor WhatsApp</div>
+            <div class="px-4 py-3"></div>
+          </div>
+          <div
+            v-for="(client, idx) in clients"
+            :key="client"
+            class="grid grid-cols-5 items-center bg-white dark:bg-gray-900 hover:bg-emerald-50 dark:hover:bg-gray-800 transition-all rounded-lg shadow-sm mb-1"
+          >
+            <div class="px-4 py-2 text-gray-900 dark:text-white">
+              {{ idx + 1 }}
+            </div>
+            <div class="px-4 py-2 text-gray-900 dark:text-white">
+              <span v-if="editClientId !== client">{{ client }}</span>
+              <PrelineInput
+                v-else
+                v-model="editClientIdInput"
+                type="text"
+                :disabled="
+                  statuses[client] === 'ready' ||
+                  statuses[client] === 'connected'
+                "
+                class="w-full !bg-white !dark:bg-gray-900 !text-gray-900 !dark:text-white border border-gray-300 dark:border-gray-600 focus:ring-2 focus:ring-emerald-400"
+                placeholder="Edit Client ID"
+              />
+            </div>
+            <div class="px-4 py-2 text-gray-900 dark:text-white">
+              <span v-if="statuses[client]">{{ statuses[client] }}</span>
+              <span v-else class="text-gray-400">Memuat...</span>
+            </div>
+            <div class="px-4 py-2 text-gray-900 dark:text-white">
+              <span v-if="statuses[client] === 'ready' && waNumbers[client]">{{
+                waNumbers[client]
+              }}</span>
+              <span v-else class="text-gray-400">-</span>
+            </div>
+            <div class="px-4 py-2 relative flex justify-end">
+              <ClientActionMenu>
+                <template #trigger>
+                  <button
+                    @mousedown.stop
+                    class="inline-flex items-center justify-center w-9 h-9 rounded-full hover:bg-gray-100 dark:hover:bg-gray-800 transition focus:outline-none focus:ring-2 focus:ring-emerald-400"
+                    title="Aksi"
+                    type="button"
+                  >
+                    <svg
+                      class="w-5 h-5 text-gray-500 dark:text-gray-300"
+                      fill="currentColor"
+                      viewBox="0 0 20 20"
+                    >
+                      <circle cx="4" cy="10" r="1.5" />
+                      <circle cx="10" cy="10" r="1.5" />
+                      <circle cx="16" cy="10" r="1.5" />
+                    </svg>
+                  </button>
+                </template>
                 <router-link
                   :to="{ name: 'ClientDetail', params: { clientId: client } }"
-                  class="bg-gray-800 text-white rounded px-2 py-1 font-semibold hover:bg-emerald-600 transition"
+                  class="block w-full text-left px-4 py-2 text-sm text-gray-700 dark:text-gray-200 hover:bg-emerald-50 dark:hover:bg-gray-800 rounded transition"
                   >Detail</router-link
                 >
                 <button
@@ -154,7 +166,7 @@
                     statuses[client] === 'ready' ||
                     statuses[client] === 'connected'
                   "
-                  class="px-2 py-1 bg-yellow-500 text-white rounded font-semibold hover:bg-yellow-600 disabled:opacity-60 disabled:cursor-not-allowed transition"
+                  class="block w-full text-left px-4 py-2 text-sm text-yellow-700 dark:text-yellow-300 hover:bg-yellow-50 dark:hover:bg-gray-800 rounded disabled:opacity-60 disabled:cursor-not-allowed transition"
                 >
                   Edit
                 </button>
@@ -165,20 +177,20 @@
                     statuses[client] === 'ready' ||
                     statuses[client] === 'connected'
                   "
-                  class="px-2 py-1 bg-emerald-600 text-white rounded font-semibold hover:bg-emerald-700 disabled:opacity-60 disabled:cursor-not-allowed transition"
+                  class="block w-full text-left px-4 py-2 text-sm text-emerald-700 dark:text-emerald-300 hover:bg-emerald-50 dark:hover:bg-gray-800 rounded disabled:opacity-60 disabled:cursor-not-allowed transition"
                 >
                   Simpan
                 </button>
                 <button
                   v-if="editClientId === client"
                   @click="cancelEdit"
-                  class="px-2 py-1 bg-gray-500 text-white rounded font-semibold hover:bg-gray-700 transition"
+                  class="block w-full text-left px-4 py-2 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-800 rounded transition"
                 >
                   Batal
                 </button>
                 <button
                   @click="confirmDelete(client)"
-                  class="px-2 py-1 bg-red-500 text-white rounded font-semibold hover:bg-red-700 transition"
+                  class="block w-full text-left px-4 py-2 text-sm text-red-700 dark:text-red-400 hover:bg-red-50 dark:hover:bg-gray-800 rounded transition"
                 >
                   Hapus
                 </button>
@@ -188,7 +200,7 @@
                     statuses[client] === 'connected'
                   "
                   @click="confirmDisconnect(client, 'logout')"
-                  class="px-2 py-1 bg-orange-500 text-white rounded font-semibold hover:bg-orange-600 transition"
+                  class="block w-full text-left px-4 py-2 text-sm text-orange-700 dark:text-orange-300 hover:bg-orange-50 dark:hover:bg-gray-800 rounded transition"
                 >
                   Logout (QR Baru)
                 </button>
@@ -198,7 +210,7 @@
                     statuses[client] === 'connected'
                   "
                   @click="confirmDisconnect(client, 'destroy')"
-                  class="px-2 py-1 bg-gray-700 text-white rounded font-semibold hover:bg-gray-900 transition"
+                  class="block w-full text-left px-4 py-2 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-800 rounded transition"
                 >
                   Putus Koneksi (Session Tetap)
                 </button>
@@ -208,21 +220,21 @@
                     statuses[client] === 'destroyed'
                   "
                   @click="reconnectClient(client)"
-                  class="px-2 py-1 bg-green-600 text-white rounded font-semibold hover:bg-green-800 transition"
+                  class="block w-full text-left px-4 py-2 text-sm text-green-700 dark:text-green-300 hover:bg-green-50 dark:hover:bg-gray-800 rounded transition"
                 >
                   Reconnect
                 </button>
                 <button
                   v-if="statuses[client] === 'qr'"
                   @click="showQR(client)"
-                  class="px-2 py-1 bg-blue-600 text-white rounded font-semibold hover:bg-blue-800 transition"
+                  class="block w-full text-left px-4 py-2 text-sm text-blue-700 dark:text-blue-300 hover:bg-blue-50 dark:hover:bg-gray-800 rounded transition"
                 >
                   Scan QR
                 </button>
-              </td>
-            </tr>
-          </tbody>
-        </table>
+              </ClientActionMenu>
+            </div>
+          </div>
+        </div>
       </div>
     </div>
     <div
@@ -288,6 +300,8 @@
 import { ref, onMounted, watch } from "vue";
 import { API_BASE_URL } from "../config";
 import { notification } from "../composables/useNotification";
+import PrelineInput from "./_PrelineInput.vue";
+import ClientActionMenu from "./ClientActionMenu.vue";
 
 const clients = ref([]);
 const loading = ref(false);
@@ -311,6 +325,7 @@ const qrImage = ref("");
 const qrLoading = ref(false);
 const pollingQR = ref(false);
 const currentQRClient = ref("");
+const waNumbers = ref({});
 
 const getAuthHeaders = () => {
   const token = localStorage.getItem("token");
@@ -348,11 +363,16 @@ const fetchStatus = async (clientId) => {
     const data = await response.json();
     if (response.ok && data.status) {
       statuses.value[clientId] = data.status;
+      if (data.status === "ready" && data.waNumber) {
+        waNumbers.value[clientId] = data.waNumber;
+      }
     } else {
       statuses.value[clientId] = data.status || "unknown";
+      waNumbers.value[clientId] = undefined;
     }
   } catch (e) {
     statuses.value[clientId] = "unknown";
+    waNumbers.value[clientId] = undefined;
   }
 };
 
