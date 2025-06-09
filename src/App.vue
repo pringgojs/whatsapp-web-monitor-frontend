@@ -1,15 +1,21 @@
 <template>
   <div>
-    <Navbar />
+    <Navbar v-if="showNavbar" />
     <RouterView />
     <ToastNotification />
   </div>
 </template>
 
 <script setup>
-import { RouterView } from "vue-router";
+import { RouterView, useRoute } from "vue-router";
 import ToastNotification from "./components/ToastNotification.vue";
 import Navbar from "./components/Navbar.vue";
+import { computed } from "vue";
+
+const route = useRoute();
+const showNavbar = computed(
+  () => !["/login", "/register"].includes(route.path)
+);
 </script>
 
 <style scoped>
