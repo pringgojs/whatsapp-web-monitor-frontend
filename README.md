@@ -1,55 +1,39 @@
-# WhatsApp Web Monitor - Frontend
+# WhatsApp Web Monitoring Frontend
 
-This is the frontend for WhatsApp Web Monitor, built with Vue.js 3 and Vite. It provides a responsive dashboard for managing and monitoring multiple WhatsApp Web clients, including login, QR scan, client status, and user management.
+Frontend aplikasi monitoring WhatsApp Web berbasis Vue 3 (Vite) dan Tailwind CSS.
 
-## Features
+## Fitur Utama
 
-- Login & registration (JWT authentication)
-- Dashboard for all WhatsApp clients
-- Scan QR code for WhatsApp Web
-- Real-time client status (ready, qr, disconnected, destroyed, etc.)
-- Add, edit, delete, disconnect, destroy, and reconnect clients
-- Role-based access (admin/user)
-- Responsive UI with dark mode support
-- User-friendly modals and notifications
+- **Login & Register** (autentikasi JWT)
+- **Dashboard**: Ringkasan dan navigasi utama
+- **Daftar Client**: Tabel client WhatsApp, status real-time, refresh, hapus, edit, reconnect, scan QR
+- **Sidebar Client Detail**:
+  - Dropdown untuk memilih client aktif
+  - Tampilkan Client ID & Nomor WA
+  - Navigasi sidebar: Kirim Pesan, Konfigurasi Webhook, Manajemen Group
+- **Kirim Pesan**: Form kirim pesan WhatsApp ke nomor tujuan
+- **Konfigurasi Webhook**: Form simpan URL webhook per client (terhubung backend)
+- **Manajemen Group**: Lihat dan refresh daftar group WhatsApp client
+- **Scan QR**: Modal scan QR code untuk login WhatsApp
+- **Status Client**: Cek status koneksi client
+- **Dark Mode & Light Mode**: Otomatis mengikuti preferensi OS
+- **UI Modern & Responsif**: Seluruh tampilan menggunakan Tailwind CSS
+- **Error Handling**: Notifikasi error & feedback pada semua form
 
-## Requirements
+## Instalasi & Menjalankan
 
-- Node.js v16 or later
-- npm
+1. `npm install`
+2. Salin/atur file `.env` jika perlu (`VITE_API_BASE_URL`)
+3. `npm run dev`
 
-## Setup
+## Struktur Utama
 
-1. **Install dependencies:**
-   ```bash
-   npm install
-   ```
-2. **Configure API URL:**
+- `src/components/` - Semua komponen utama (Login, Register, Dashboard, ClientsList, ClientDetail, dsb)
+- `src/config.js` - Konfigurasi API
+- `src/router.js` - Routing aplikasi
 
-   - By default, the frontend expects the backend at `http://localhost:3000`.
-   - To change, edit API URLs in the code or use Vite env variables (see Vite docs).
+## Catatan
 
-3. **Run the frontend app:**
-   ```bash
-   npm run dev
-   ```
-   The app will run on `http://localhost:5173` by default.
-
-## Main Pages
-
-- `/login` — User login
-- `/register` — User registration
-- `/clients` — WhatsApp clients list & management
-- `/scan-qr` — Scan WhatsApp QR code
-- `/status` — Client status
-- `/` — Dashboard
-
-## Development
-
-- Main entry: `src/main.js`
-- Routing: `src/router.js`
-- Components: `src/components/`
-
-## License
-
-MIT
+- Pastikan backend sudah berjalan dan API URL sudah benar.
+- Token JWT disimpan di localStorage.
+- Semua fitur sudah terintegrasi penuh dengan backend.
