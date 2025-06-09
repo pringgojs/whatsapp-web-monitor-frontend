@@ -182,6 +182,7 @@
 import { ref, onMounted, watch } from "vue";
 import { useRoute, useRouter } from "vue-router";
 import { API_BASE_URL } from "../config";
+import { notification } from "../composables/useNotification";
 
 const route = useRoute();
 const router = useRouter();
@@ -289,13 +290,16 @@ const sendMessage = async () => {
     const data = await res.json();
     if (res.ok) {
       msgResult.value = "Pesan berhasil dikirim!";
+      notification("success", "Pesan berhasil dikirim!");
       to.value = "";
       message.value = "";
     } else {
       msgResult.value = data.error || "Gagal mengirim pesan.";
+      notification("error", msgResult.value);
     }
   } catch (e) {
     msgResult.value = "Gagal mengirim pesan.";
+    notification("error", "Gagal mengirim pesan.");
   }
 };
 
@@ -320,11 +324,14 @@ const saveWebhook = async () => {
     const data = await res.json();
     if (res.ok) {
       webhookResult.value = "Webhook berhasil disimpan.";
+      notification("success", "Webhook berhasil disimpan.");
     } else {
       webhookResult.value = data.error || "Gagal menyimpan webhook.";
+      notification("error", webhookResult.value);
     }
   } catch (e) {
     webhookResult.value = "Gagal menyimpan webhook.";
+    notification("error", "Gagal menyimpan webhook.");
   }
 };
 onMounted(async () => {
@@ -366,9 +373,11 @@ const fetchGroups = async () => {
       groups.value = data.groups;
     } else {
       groupError.value = data.error || "Gagal memuat group.";
+      notification("error", groupError.value);
     }
   } catch (e) {
     groupError.value = "Gagal memuat group.";
+    notification("error", "Gagal memuat group.");
   }
 };
 

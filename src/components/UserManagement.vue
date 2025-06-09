@@ -35,10 +35,6 @@
       >
         Tambah User
       </button>
-      <div v-if="addError" class="text-red-500 mt-2">{{ addError }}</div>
-      <div v-if="addSuccess" class="text-emerald-600 mt-2">
-        {{ addSuccess }}
-      </div>
     </form>
     <h3 class="text-lg font-semibold mb-2 text-gray-700 dark:text-gray-200">
       Daftar User
@@ -152,15 +148,6 @@
         </div>
       </div>
     </div>
-    <div
-      v-if="toast.show"
-      :class="[
-        'fixed top-6 left-1/2 -translate-x-1/2 z-50 px-6 py-3 rounded shadow-lg text-white',
-        toast.type === 'success' ? 'bg-emerald-600' : 'bg-red-600',
-      ]"
-    >
-      {{ toast.message }}
-    </div>
   </div>
 </template>
 
@@ -171,23 +158,13 @@ import { notification } from "../composables/useNotification";
 
 const users = ref([]);
 const newUser = ref({ email: "", password: "", role: "" });
-const addError = ref("");
-const addSuccess = ref("");
 const editUserId = ref("");
 const editUser = ref({ email: "", role: "" });
 const showDeleteConfirm = ref(false);
 const deleteUserId = ref("");
 const deleteUserEmail = ref("");
 
-// Toast notification
-const toast = ref({ show: false, message: "", type: "success" });
-function showToast(message, type = "success") {
-  toast.value = { show: true, message, type };
-  setTimeout(() => (toast.value.show = false), 3000);
-}
-
 const fetchUsers = async () => {
-  addError.value = "";
   try {
     const token = localStorage.getItem("token");
     const res = await fetch(`${API_BASE_URL}/users`, {
@@ -197,31 +174,26 @@ const fetchUsers = async () => {
     if (res.ok && data.users) {
       users.value = data.users;
     } else {
-      addError.value = data.error || "Gagal memuat user.";
+      notification("error", data.error || "Gagal memuat user.");
     }
   } catch (e) {
-    addError.value = "Gagal memuat user.";
+    notification("error", "Gagal memuat user.");
   }
 };
 
 const validateEmail = (email) => /.+@.+\..+/.test(email);
 
 const addUser = async () => {
-  addError.value = "";
-  addSuccess.value = "";
   // Validasi
   if (!validateEmail(newUser.value.email)) {
-    addError.value = "Format email tidak valid.";
     notification("error", "Format email tidak valid.");
     return;
   }
   if (!newUser.value.password || newUser.value.password.length < 6) {
-    addError.value = "Password minimal 6 karakter.";
     notification("error", "Password minimal 6 karakter.");
     return;
   }
   if (!newUser.value.role) {
-    addError.value = "Role wajib dipilih.";
     notification("error", "Role wajib dipilih.");
     return;
   }
@@ -237,16 +209,13 @@ const addUser = async () => {
     });
     const data = await res.json();
     if (res.ok) {
-      addSuccess.value = "User berhasil ditambahkan.";
       notification("success", "User berhasil ditambahkan.");
       newUser.value = { email: "", password: "", role: "" };
       fetchUsers();
     } else {
-      addError.value = data.error || "Gagal menambah user.";
-      notification("error", addError.value);
+      notification("error", data.error || "Gagal menambah user.");
     }
   } catch (e) {
-    addError.value = "Gagal menambah user.";
     notification("error", "Gagal menambah user.");
   }
 };
@@ -260,16 +229,12 @@ function cancelEditUser() {
   editUser.value = { email: "", role: "" };
 }
 const saveEditUser = async (id) => {
-  addError.value = "";
-  addSuccess.value = "";
   // Validasi
   if (!validateEmail(editUser.value.email)) {
-    addError.value = "Format email tidak valid.";
     notification("error", "Format email tidak valid.");
     return;
   }
   if (!editUser.value.role) {
-    addError.value = "Role wajib dipilih.";
     notification("error", "Role wajib dipilih.");
     return;
   }
@@ -285,16 +250,13 @@ const saveEditUser = async (id) => {
     });
     const data = await res.json();
     if (res.ok) {
-      addSuccess.value = "User berhasil diupdate.";
       notification("success", "User berhasil diupdate.");
       editUserId.value = "";
       fetchUsers();
     } else {
-      addError.value = data.error || "Gagal update user.";
-      notification("error", addError.value);
+      notification("error", data.error || "Gagal update user.");
     }
   } catch (e) {
-    addError.value = "Gagal update user.";
     notification("error", "Gagal update user.");
   }
 };
@@ -304,8 +266,6 @@ function confirmDeleteUser(user) {
   deleteUserEmail.value = user.email;
 }
 const doDeleteUser = async () => {
-  addError.value = "";
-  addSuccess.value = "";
   try {
     const token = localStorage.getItem("token");
     const res = await fetch(`${API_BASE_URL}/users/${deleteUserId.value}`, {
@@ -314,16 +274,13 @@ const doDeleteUser = async () => {
     });
     const data = await res.json();
     if (res.ok) {
-      addSuccess.value = "User berhasil dihapus.";
       notification("success", "User berhasil dihapus.");
       showDeleteConfirm.value = false;
       fetchUsers();
     } else {
-      addError.value = data.error || "Gagal menghapus user.";
-      notification("error", addError.value);
+      notification("error", data.error || "Gagal menghapus user.");
     }
   } catch (e) {
-    addError.value = "Gagal menghapus user.";
     notification("error", "Gagal menghapus user.");
   }
 };

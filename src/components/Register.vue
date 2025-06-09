@@ -70,6 +70,7 @@
 import { ref } from "vue";
 import { useRouter } from "vue-router";
 import { API_BASE_URL } from "../config";
+import { notification } from "../composables/useNotification";
 
 const email = ref("");
 const password = ref("");
@@ -94,12 +95,15 @@ const handleRegister = async () => {
     const data = await response.json();
     if (response.ok) {
       success.value = "Registrasi berhasil. Silakan login.";
+      notification("success", "Registrasi berhasil! Silakan login.");
       setTimeout(() => router.push("/login"), 1200);
     } else {
       error.value = data.error || "Registrasi gagal";
+      notification("error", error.value);
     }
   } catch (e) {
     error.value = "Terjadi kesalahan koneksi";
+    notification("error", "Registrasi gagal.");
   }
 };
 </script>

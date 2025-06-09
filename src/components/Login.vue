@@ -50,6 +50,7 @@
 import { ref } from "vue";
 import { useRouter } from "vue-router";
 import { API_BASE_URL } from "../config";
+import { notification } from "../composables/useNotification";
 
 const router = useRouter();
 const email = ref("");
@@ -59,25 +60,24 @@ const loading = ref(false);
 
 const login = async () => {
   error.value = "";
-  loading.value = true;
   try {
-    const response = await fetch(`${API_BASE_URL}/auth/login`, {
+    const res = await fetch(`${API_BASE_URL}/auth/login`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        email: email.value,
-        password: password.value,
-      }),
+      body: JSON.stringify({ email: email.value, password: password.value }),
     });
-    const data = await response.json();
-    if (response.ok && data.token) {
+    const data = await res.json();
+    if (res.ok && data.token) {
       localStorage.setItem("token", data.token);
+      notification("success", "Login berhasil!");
       router.push("/");
     } else {
       error.value = data.error || "Login gagal.";
+      notification("error", error.value);
     }
   } catch (e) {
     error.value = "Login gagal.";
+    notification("error", "Login gagal.");
   } finally {
     loading.value = false;
   }
