@@ -229,6 +229,10 @@ watch(
   () => route.params.clientId,
   async (newId) => {
     clientId.value = newId;
+    // Reset form kirim pesan
+    to.value = "";
+    message.value = "";
+    msgResult.value = "";
     // Fetch info client baru
     try {
       const token = localStorage.getItem("token");
