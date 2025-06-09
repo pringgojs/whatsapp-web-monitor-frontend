@@ -120,34 +120,7 @@
         </tr>
       </tbody>
     </table>
-    <div
-      v-if="showDeleteConfirm"
-      class="fixed inset-0 bg-black bg-opacity-40 flex items-center justify-center z-50"
-    >
-      <div
-        class="bg-white dark:bg-gray-800 rounded-lg shadow-xl p-6 min-w-[300px] text-center relative"
-      >
-        <h3 class="text-lg font-semibold mb-4">Konfirmasi Hapus User</h3>
-        <p class="mb-4">
-          Yakin ingin menghapus user <b>{{ deleteUserEmail }}</b
-          >?
-        </p>
-        <div class="flex gap-2 justify-center">
-          <button
-            @click="doDeleteUser"
-            class="px-4 py-2 bg-red-500 text-white rounded font-semibold hover:bg-red-700 transition"
-          >
-            Ya, Hapus
-          </button>
-          <button
-            @click="showDeleteConfirm = false"
-            class="px-4 py-2 bg-gray-500 text-white rounded font-semibold hover:bg-gray-700 transition"
-          >
-            Batal
-          </button>
-        </div>
-      </div>
-    </div>
+    <!-- Local delete confirmation modal removed, now handled by global dialog -->
   </div>
 </template>
 
@@ -155,14 +128,15 @@
 import { ref, onMounted } from "vue";
 import { API_BASE_URL } from "../config";
 import { notification } from "../composables/useNotification";
+import { useDialog } from "../composables/useDialog";
 
 const users = ref([]);
 const newUser = ref({ email: "", password: "", role: "" });
 const editUserId = ref("");
 const editUser = ref({ email: "", role: "" });
-const showDeleteConfirm = ref(false);
-const deleteUserId = ref("");
-const deleteUserEmail = ref("");
+// Removed: showDeleteConfirm, deleteUserId, deleteUserEmail
+
+const { openDialog } = useDialog();
 
 const fetchUsers = async () => {
   try {
@@ -260,22 +234,31 @@ const saveEditUser = async (id) => {
     notification("error", "Gagal update user.");
   }
 };
+
 function confirmDeleteUser(user) {
-  showDeleteConfirm.value = true;
-  deleteUserId.value = user.id;
-  deleteUserEmail.value = user.email;
+  openDialog({
+    title: "Konfirmasi Hapus User",
+    description: `Yakin ingin menghapus user <b>${user.email}</b>?`,
+    onYes: async () => {
+      await doDeleteUser(user.id);
+    },
+    onClose: () => {},
+    yes: "Ya, Hapus",
+    no: "Batal",
+    html: true,
+  });
 }
-const doDeleteUser = async () => {
+
+const doDeleteUser = async (id) => {
   try {
     const token = localStorage.getItem("token");
-    const res = await fetch(`${API_BASE_URL}/users/${deleteUserId.value}`, {
+    const res = await fetch(`${API_BASE_URL}/users/${id}`, {
       method: "DELETE",
       headers: { Authorization: `Bearer ${token}` },
     });
     const data = await res.json();
     if (res.ok) {
       notification("success", "User berhasil dihapus.");
-      showDeleteConfirm.value = false;
       fetchUsers();
     } else {
       notification("error", data.error || "Gagal menghapus user.");

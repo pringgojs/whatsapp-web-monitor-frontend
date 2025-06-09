@@ -3,6 +3,15 @@
     <Navbar v-if="showNavbar" />
     <RouterView />
     <ToastNotification />
+    <GlobalDialog
+      :open="isOpen"
+      :title="dialogTitle"
+      :description="dialogDescription"
+      :yesText="yesText"
+      :noText="noText"
+      :onYes="onYes"
+      :onClose="onClose"
+    />
   </div>
 </template>
 
@@ -10,12 +19,24 @@
 import { RouterView, useRoute } from "vue-router";
 import ToastNotification from "./components/ToastNotification.vue";
 import Navbar from "./components/Navbar.vue";
+import GlobalDialog from "./components/GlobalDialog.vue";
 import { computed } from "vue";
+import { useDialog } from "./composables/useDialog";
 
 const route = useRoute();
 const showNavbar = computed(
   () => !["/login", "/register"].includes(route.path)
 );
+
+const {
+  isOpen,
+  dialogTitle,
+  dialogDescription,
+  yesText,
+  noText,
+  onYes,
+  onClose,
+} = useDialog();
 </script>
 
 <style scoped>

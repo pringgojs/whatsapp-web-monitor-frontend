@@ -447,157 +447,6 @@
     >
       Belum ada client terdaftar.
     </div>
-
-    <!-- Dialog Konfirmasi Hapus Client -->
-    <div
-      v-if="showDeleteConfirm"
-      class="fixed inset-0 bg-black bg-opacity-40 flex items-center justify-center z-50"
-    >
-      <div
-        class="relative bg-white dark:bg-gray-900 rounded-2xl shadow-2xl p-8 min-w-[340px] w-full max-w-xs flex flex-col items-center border border-gray-100 dark:border-gray-800"
-      >
-        <button
-          @click="showDeleteConfirm = false"
-          class="absolute top-3 right-3 w-8 h-8 flex items-center justify-center rounded-full bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700 text-gray-500 dark:text-gray-300 focus:outline-none focus:ring-2 focus:ring-emerald-400 transition"
-          aria-label="Tutup"
-        >
-          <svg
-            class="w-5 h-5"
-            fill="none"
-            stroke="currentColor"
-            stroke-width="2"
-            viewBox="0 0 24 24"
-          >
-            <path
-              stroke-linecap="round"
-              stroke-linejoin="round"
-              d="M6 18L18 6M6 6l12 12"
-            />
-          </svg>
-        </button>
-        <div class="flex flex-col items-center gap-2 mt-2 mb-4">
-          <svg
-            class="w-12 h-12 text-red-500"
-            fill="none"
-            stroke="currentColor"
-            stroke-width="2"
-            viewBox="0 0 24 24"
-          >
-            <circle
-              cx="12"
-              cy="12"
-              r="10"
-              stroke="currentColor"
-              stroke-width="2"
-            />
-            <path
-              stroke-linecap="round"
-              stroke-linejoin="round"
-              d="M6 18L18 6M6 6l12 12"
-            />
-          </svg>
-          <h3
-            class="text-xl font-bold text-gray-700 dark:text-gray-100 text-center mt-2 mb-1"
-          >
-            Konfirmasi Hapus Client
-          </h3>
-          <p
-            class="text-gray-600 dark:text-gray-300 text-center text-base mb-2"
-          >
-            {{ deleteWarning }}
-          </p>
-        </div>
-        <div class="flex gap-3 justify-center mt-2 w-full">
-          <button
-            @click="doDeleteClient"
-            class="flex-1 px-4 py-2 rounded-lg bg-red-600 hover:bg-red-700 text-white font-semibold transition text-base shadow focus:outline-none focus:ring-2 focus:ring-red-400"
-          >
-            Ya, Hapus
-          </button>
-          <button
-            @click="showDeleteConfirm = false"
-            class="flex-1 px-4 py-2 rounded-lg bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 text-gray-700 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-gray-800 font-semibold transition text-base shadow focus:outline-none focus:ring-2 focus:ring-gray-300"
-          >
-            Batal
-          </button>
-        </div>
-      </div>
-    </div>
-    <!-- Dialog Konfirmasi Disconnect Client -->
-    <div
-      v-if="showDisconnectConfirm"
-      class="fixed inset-0 bg-black bg-opacity-40 flex items-center justify-center z-50"
-    >
-      <div
-        class="relative bg-white dark:bg-gray-900 rounded-2xl shadow-2xl p-8 min-w-[340px] w-full max-w-xs flex flex-col items-center border border-gray-100 dark:border-gray-800"
-      >
-        <button
-          @click="showDisconnectConfirm = false"
-          class="absolute top-3 right-3 w-8 h-8 flex items-center justify-center rounded-full bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700 text-gray-500 dark:text-gray-300 focus:outline-none focus:ring-2 focus:ring-emerald-400 transition"
-          aria-label="Tutup"
-        >
-          <svg
-            class="w-5 h-5"
-            fill="none"
-            stroke="currentColor"
-            stroke-width="2"
-            viewBox="0 0 24 24"
-          >
-            <path
-              stroke-linecap="round"
-              stroke-linejoin="round"
-              d="M6 18L18 6M6 6l12 12"
-            />
-          </svg>
-        </button>
-        <div class="flex flex-col items-center gap-2 mt-2 mb-4">
-          <svg
-            class="w-12 h-12 text-orange-400"
-            fill="none"
-            stroke="currentColor"
-            stroke-width="2"
-            viewBox="0 0 24 24"
-          >
-            <circle
-              cx="12"
-              cy="12"
-              r="10"
-              stroke="currentColor"
-              stroke-width="2"
-            />
-            <path
-              stroke-linecap="round"
-              stroke-linejoin="round"
-              d="M6 18L18 6M6 6l12 12"
-            />
-          </svg>
-          <h3
-            class="text-xl font-bold text-gray-700 dark:text-gray-100 text-center mt-2 mb-1"
-          >
-            Konfirmasi Disconnect Client
-          </h3>
-          <p
-            class="text-gray-600 dark:text-gray-300 text-center text-base mb-2"
-          >
-            {{ disconnectWarning }}
-          </p>
-        </div>
-        <div class="flex gap-3 justify-center mt-2 w-full">
-          <button
-            @click="doDisconnectClient"
-            class="flex-1 px-4 py-2 rounded-lg bg-orange-500 hover:bg-orange-600 text-white font-semibold transition text-base shadow focus:outline-none focus:ring-2 focus:ring-orange-300"
-          >
-            Ya, Disconnect
-          </button>
-          <button
-            @click="showDisconnectConfirm = false"
-            class="flex-1 px-4 py-2 rounded-lg bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 text-gray-700 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-gray-800 font-semibold transition text-base shadow focus:outline-none focus:ring-2 focus:ring-gray-300"
-          >
-            Batal
-          </button>
-        </div>
-      </div>
-    </div>
   </div>
 </template>
 
@@ -605,8 +454,11 @@
 import { ref, onMounted, watch } from "vue";
 import { API_BASE_URL } from "../config";
 import { notification } from "../composables/useNotification";
+import { useDialog } from "../composables/useDialog";
 import PrelineInput from "./_PrelineInput.vue";
 import ClientActionMenu from "./ClientActionMenu.vue";
+
+const { openDialog } = useDialog();
 
 const clients = ref([]);
 const loading = ref(false);
@@ -617,15 +469,13 @@ const newClientId = ref("");
 const addError = ref("");
 const editClientId = ref("");
 const editClientIdInput = ref("");
-const showDeleteConfirm = ref(false);
 const clientToDelete = ref("");
 const deleteWarning = ref("");
-const showDisconnectConfirm = ref(false);
 const clientToDisconnect = ref("");
 const disconnectWarning = ref("");
 const disconnectType = ref("logout");
 const reconnectingClients = ref({}); // key: clientId, value: true/false
-const showQRModal = ref(false);
+const showQRModal = ref("");
 const qrImage = ref("");
 const qrLoading = ref(false);
 const pollingQR = ref(false);
@@ -766,32 +616,50 @@ const deleteClient = async (clientId, silent = false) => {
 
 const confirmDelete = (client) => {
   clientToDelete.value = client;
-  if (
-    statuses.value[client] === "ready" ||
-    statuses.value[client] === "connected"
-  ) {
-    deleteWarning.value =
-      "Client sedang terhubung. Menghapus client akan mendisconnect WhatsApp. Lanjutkan?";
-  } else {
-    deleteWarning.value = "Yakin ingin menghapus client ini?";
-  }
-  showDeleteConfirm.value = true;
-};
-
-const doDeleteClient = async () => {
-  await deleteClient(clientToDelete.value);
-  showDeleteConfirm.value = false;
-  clientToDelete.value = "";
+  const warning =
+    statuses.value[client] === "ready" || statuses.value[client] === "connected"
+      ? "Client sedang terhubung. Menghapus client akan mendisconnect WhatsApp. Lanjutkan?"
+      : "Yakin ingin menghapus client ini?";
+  openDialog({
+    title: "Konfirmasi Hapus Client",
+    description: warning,
+    onYes: async () => {
+      await deleteClient(client);
+      clientToDelete.value = "";
+    },
+    onClose: () => {
+      clientToDelete.value = "";
+    },
+    yes: "Ya, Hapus",
+    no: "Batal",
+  });
 };
 
 const confirmDisconnect = (client, type = "logout") => {
   clientToDisconnect.value = client;
   disconnectType.value = type;
-  disconnectWarning.value =
+  const warning =
     type === "logout"
       ? "Yakin ingin logout client ini? WhatsApp akan logout dan harus scan QR lagi."
       : "Yakin ingin memutus koneksi client ini? Session tetap ada, tidak perlu scan QR ulang.";
-  showDisconnectConfirm.value = true;
+  openDialog({
+    title: "Konfirmasi Disconnect Client",
+    description: warning,
+    onYes: async () => {
+      await doDisconnectClient();
+      clientToDisconnect.value = "";
+    },
+    onClose: () => {
+      clientToDisconnect.value = "";
+    },
+    yes: "Ya, Disconnect",
+    no: "Batal",
+  });
+};
+
+const doDeleteClient = async () => {
+  await deleteClient(clientToDelete.value);
+  clientToDelete.value = "";
 };
 
 const doDisconnectClient = async () => {
@@ -813,9 +681,6 @@ const doDisconnectClient = async () => {
     }
   } catch (e) {
     notification("error", "Gagal disconnect client.");
-  } finally {
-    showDisconnectConfirm.value = false;
-    clientToDisconnect.value = "";
   }
 };
 
