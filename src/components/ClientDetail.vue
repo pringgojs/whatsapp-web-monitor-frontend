@@ -88,9 +88,26 @@
     <main
       class="flex-1 p-6 bg-white dark:bg-gray-900 rounded-b-xl md:rounded-r-xl md:rounded-bl-none"
     >
-      <h2 class="text-xl font-bold mb-4 text-gray-800 dark:text-white">
-        Detail Client: {{ clientId }}
-      </h2>
+      <div class="flex items-center mb-4">
+        <router-link to="/" class="mr-2 group" title="Kembali ke Dashboard">
+          <svg
+            class="w-6 h-6 text-gray-500 group-hover:text-emerald-600 dark:text-gray-300 dark:group-hover:text-emerald-400 transition"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+            viewBox="0 0 24 24"
+          >
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              d="M3 12l2-2m0 0l7-7 7 7m-9 2v7a2 2 0 002 2h4a2 2 0 002-2v-7m-6 0h6"
+            />
+          </svg>
+        </router-link>
+        <h2 class="text-xl font-bold text-gray-800 dark:text-white">
+          Detail Client: {{ clientId }}
+        </h2>
+      </div>
       <div v-if="activeMenu === 'send-message'">
         <h3 class="text-lg font-semibold mb-2 text-gray-700 dark:text-gray-200">
           Kirim Pesan
