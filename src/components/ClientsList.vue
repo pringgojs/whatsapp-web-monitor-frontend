@@ -16,19 +16,100 @@
       class="fixed inset-0 bg-black bg-opacity-40 flex items-center justify-center z-50"
     >
       <div
-        class="bg-white dark:bg-gray-800 rounded-lg shadow-xl p-6 min-w-[300px] text-center relative"
+        class="relative bg-white dark:bg-gray-900 rounded-2xl shadow-2xl p-8 min-w-[340px] w-full max-w-xs flex flex-col items-center border border-gray-100 dark:border-gray-800"
       >
-        <h3 class="text-lg font-semibold mb-4">Scan WhatsApp QR</h3>
-        <div v-if="qrLoading" class="text-gray-500 dark:text-gray-300 mb-4">
-          Loading QR...
-        </div>
-        <div v-else-if="qrImage" class="flex justify-center mb-4">
-          <img :src="qrImage" alt="QR Code" class="max-w-xs mx-auto" />
-        </div>
-        <div v-else class="text-red-500 mb-4">QR not available.</div>
         <button
           @click="closeQRModal"
-          class="mt-2 px-4 py-2 rounded bg-primary-600 text-white font-semibold hover:bg-primary-700 transition"
+          class="absolute top-3 right-3 w-8 h-8 flex items-center justify-center rounded-full bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700 text-gray-500 dark:text-gray-300 focus:outline-none focus:ring-2 focus:ring-emerald-400 transition"
+          aria-label="Tutup"
+        >
+          <svg
+            class="w-5 h-5"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+            viewBox="0 0 24 24"
+          >
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              d="M6 18L18 6M6 6l12 12"
+            />
+          </svg>
+        </button>
+        <h3
+          class="text-xl font-bold text-gray-700 dark:text-gray-100 mb-4 mt-2 text-center tracking-tight"
+        >
+          Scan QR WhatsApp
+        </h3>
+        <div
+          v-if="qrLoading"
+          class="flex flex-col items-center gap-2 mb-4 mt-6"
+        >
+          <svg
+            class="animate-spin h-7 w-7 text-emerald-500"
+            fill="none"
+            viewBox="0 0 24 24"
+          >
+            <circle
+              class="opacity-25"
+              cx="12"
+              cy="12"
+              r="10"
+              stroke="currentColor"
+              stroke-width="4"
+            ></circle>
+            <path
+              class="opacity-75"
+              fill="currentColor"
+              d="M4 12a8 8 0 018-8v8z"
+            ></path>
+          </svg>
+          <span class="text-gray-500 dark:text-gray-300 text-sm"
+            >Memuat QR...</span
+          >
+        </div>
+        <div v-else-if="qrImage" class="flex flex-col items-center mb-4">
+          <div
+            class="p-3 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl shadow-sm"
+          >
+            <img
+              :src="qrImage"
+              alt="QR Code"
+              class="w-56 h-56 object-contain"
+            />
+          </div>
+          <span
+            class="mt-3 text-gray-500 dark:text-gray-300 text-xs text-center"
+            >Scan QR ini di aplikasi WhatsApp Anda untuk login.</span
+          >
+        </div>
+        <div v-else class="flex flex-col items-center gap-2 mb-4 mt-6">
+          <svg
+            class="w-8 h-8 text-red-400"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+            viewBox="0 0 24 24"
+          >
+            <circle
+              cx="12"
+              cy="12"
+              r="10"
+              stroke="currentColor"
+              stroke-width="2"
+            />
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              d="M6 18L18 6M6 6l12 12"
+            />
+          </svg>
+          <span class="text-red-500 text-sm">QR tidak tersedia.</span>
+        </div>
+        <button
+          @click="closeQRModal"
+          class="mt-6 px-5 py-2 rounded-lg bg-emerald-600 hover:bg-emerald-700 text-white font-semibold transition text-base shadow focus:outline-none focus:ring-2 focus:ring-emerald-400"
         >
           Tutup
         </button>
