@@ -3,11 +3,47 @@
     class="flex flex-col md:flex-row min-h-[400px] bg-white dark:bg-gray-900 rounded-xl shadow-lg mx-auto mt-10 max-w-4xl"
   >
     <aside
-      class="w-full md:w-56 bg-gray-900 dark:bg-gray-800 text-gray-900 dark:text-white rounded-t-xl md:rounded-l-xl md:rounded-tr-none p-6 flex-shrink-0"
+      class="w-full md:w-56 bg-white dark:bg-gray-800 text-gray-900 dark:text-white rounded-t-xl md:rounded-l-xl md:rounded-tr-none p-6 flex-shrink-0"
     >
       <div class="mb-6 border-b border-gray-700 pb-4">
         <div class="text-xs text-gray-400">Client ID:</div>
-        <div class="font-bold text-lg break-all">{{ clientId }}</div>
+        <div class="relative">
+          <button
+            @click="showClientDropdown = !showClientDropdown"
+            class="font-bold text-lg break-all w-full text-left flex items-center justify-between focus:outline-none focus:ring-2 focus:ring-emerald-400 rounded px-2 py-1 hover:bg-gray-100 dark:hover:bg-gray-700"
+          >
+            {{ clientId }}
+            <svg
+              class="w-4 h-4 ml-2 inline-block"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+              viewBox="0 0 24 24"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                d="M19 9l-7 7-7-7"
+              />
+            </svg>
+          </button>
+          <div
+            v-if="showClientDropdown"
+            class="absolute z-10 mt-1 w-full bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded shadow-lg"
+          >
+            <ul>
+              <li v-for="c in clients" :key="c">
+                <button
+                  @click="selectClient(c)"
+                  class="w-full text-left px-3 py-2 hover:bg-emerald-100 dark:hover:bg-emerald-700 rounded text-gray-900 dark:text-white"
+                  :class="{ 'bg-emerald-600 text-white': c === clientId }"
+                >
+                  {{ c }}
+                </button>
+              </li>
+            </ul>
+          </div>
+        </div>
         <div v-if="waNumber" class="text-xs text-gray-400 mt-2">Nomor WA:</div>
         <div v-if="waNumber" class="font-semibold text-emerald-300 break-all">
           {{ waNumber }}
@@ -16,7 +52,7 @@
       <ul class="space-y-2">
         <li
           :class="[
-            'cursor-pointer rounded px-4 py-2 font-semibold transition',
+            'cursor-pointer rounded px-4 py-2 font-semibold transition text-gray-800 dark:text-white',
             activeMenu === 'send-message'
               ? 'bg-emerald-600 text-white'
               : 'hover:bg-gray-700 hover:text-emerald-300',
@@ -27,7 +63,7 @@
         </li>
         <li
           :class="[
-            'cursor-pointer rounded px-4 py-2 font-semibold transition',
+            'cursor-pointer rounded px-4 py-2 font-semibold transition text-gray-800 dark:text-white',
             activeMenu === 'webhook'
               ? 'bg-emerald-600 text-white'
               : 'hover:bg-gray-700 hover:text-emerald-300',
@@ -38,7 +74,7 @@
         </li>
         <li
           :class="[
-            'cursor-pointer rounded px-4 py-2 font-semibold transition',
+            'cursor-pointer rounded px-4 py-2 font-semibold transition text-gray-800 dark:text-white',
             activeMenu === 'group'
               ? 'bg-emerald-600 text-white'
               : 'hover:bg-gray-700 hover:text-emerald-300',
@@ -143,20 +179,38 @@
 </template>
 
 <script setup>
-import { ref, onMounted } from "vue";
-import { useRoute } from "vue-router";
+import { ref, onMounted, watch } from "vue";
+import { useRoute, useRouter } from "vue-router";
 import { API_BASE_URL } from "../config";
 
 const route = useRoute();
-const clientId = route.params.clientId;
+const router = useRouter();
+const clientId = ref(route.params.clientId);
+const clients = ref([]);
 const activeMenu = ref("send-message");
 const waNumber = ref("");
+const showClientDropdown = ref(false);
+
+// Fetch all clients for dropdown
+const fetchClients = async () => {
+  try {
+    const token = localStorage.getItem("token");
+    const res = await fetch(`${API_BASE_URL}/sessions`, {
+      headers: { Authorization: `Bearer ${token}` },
+    });
+    const data = await res.json();
+    if (data.sessions) {
+      clients.value = data.sessions.map((s) => s.clientId || s.id || s);
+    }
+  } catch {}
+};
 
 onMounted(async () => {
+  fetchClients();
   // Fetch info client dari backend
   try {
     const token = localStorage.getItem("token");
-    const res = await fetch(`${API_BASE_URL}/sessions/${clientId}/info`, {
+    const res = await fetch(`${API_BASE_URL}/sessions/${clientId.value}/info`, {
       headers: { Authorization: `Bearer ${token}` },
     });
     const data = await res.json();
@@ -169,6 +223,44 @@ onMounted(async () => {
     waNumber.value = "";
   }
 });
+
+// Watch for route changes to update clientId dan data terkait
+watch(
+  () => route.params.clientId,
+  async (newId) => {
+    clientId.value = newId;
+    // Fetch info client baru
+    try {
+      const token = localStorage.getItem("token");
+      const res = await fetch(`${API_BASE_URL}/sessions/${newId}/info`, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      const data = await res.json();
+      if (res.ok && data.waNumber) {
+        waNumber.value = data.waNumber;
+      } else {
+        waNumber.value = "";
+      }
+    } catch {
+      waNumber.value = "";
+    }
+    // Fetch webhook client baru
+    try {
+      const token = localStorage.getItem("token");
+      const res = await fetch(`${API_BASE_URL}/sessions/${newId}/webhook`, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      const data = await res.json();
+      if (res.ok && data.webhookUrl) {
+        webhookUrl.value = data.webhookUrl;
+      } else {
+        webhookUrl.value = "";
+      }
+    } catch {
+      webhookUrl.value = "";
+    }
+  }
+);
 
 // Kirim Pesan
 const to = ref("");
@@ -204,12 +296,48 @@ const webhookUrl = ref("");
 const webhookResult = ref("");
 const saveWebhook = async () => {
   webhookResult.value = "";
-  // Simulasi: simpan ke localStorage (implementasi backend bisa ditambah nanti)
-  localStorage.setItem(`webhook_${clientId}`, webhookUrl.value);
-  webhookResult.value = "Webhook disimpan (simulasi).";
+  try {
+    const token = localStorage.getItem("token");
+    const res = await fetch(
+      `${API_BASE_URL}/sessions/${clientId.value}/webhook`,
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({ webhookUrl: webhookUrl.value }),
+      }
+    );
+    const data = await res.json();
+    if (res.ok) {
+      webhookResult.value = "Webhook berhasil disimpan.";
+    } else {
+      webhookResult.value = data.error || "Gagal menyimpan webhook.";
+    }
+  } catch (e) {
+    webhookResult.value = "Gagal menyimpan webhook.";
+  }
 };
-onMounted(() => {
-  webhookUrl.value = localStorage.getItem(`webhook_${clientId}`) || "";
+onMounted(async () => {
+  // Fetch webhook URL dari backend
+  try {
+    const token = localStorage.getItem("token");
+    const res = await fetch(
+      `${API_BASE_URL}/sessions/${clientId.value}/webhook`,
+      {
+        headers: { Authorization: `Bearer ${token}` },
+      }
+    );
+    const data = await res.json();
+    if (res.ok && data.webhookUrl) {
+      webhookUrl.value = data.webhookUrl;
+    } else {
+      webhookUrl.value = "";
+    }
+  } catch {
+    webhookUrl.value = "";
+  }
 });
 
 // Group
@@ -219,9 +347,12 @@ const fetchGroups = async () => {
   groupError.value = "";
   try {
     const token = localStorage.getItem("token");
-    const res = await fetch(`${API_BASE_URL}/sessions/${clientId}/groups`, {
-      headers: { Authorization: `Bearer ${token}` },
-    });
+    const res = await fetch(
+      `${API_BASE_URL}/sessions/${clientId.value}/groups`,
+      {
+        headers: { Authorization: `Bearer ${token}` },
+      }
+    );
     const data = await res.json();
     if (res.ok && Array.isArray(data.groups)) {
       groups.value = data.groups;
@@ -232,6 +363,13 @@ const fetchGroups = async () => {
     groupError.value = "Gagal memuat group.";
   }
 };
+
+function selectClient(c) {
+  showClientDropdown.value = false;
+  if (c !== clientId.value) {
+    router.push({ name: "ClientDetail", params: { clientId: c } });
+  }
+}
 </script>
 
 <!-- Tailwind migration: form section only. -->
