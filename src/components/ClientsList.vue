@@ -34,29 +34,67 @@
         </button>
       </div>
     </div>
-    <h1 class="text-2xl font-bold mb-4">Daftar Client WhatsApp Terdaftar</h1>
-    <div class="flex flex-wrap gap-2 mb-4">
-      <button
-        @click="fetchClients"
-        class="px-4 py-2 bg-emerald-600 text-white rounded font-semibold hover:bg-emerald-700 transition"
+    <div class="flex items-center justify-between mb-4">
+      <h1
+        class="text-xl font-semibold text-gray-700 dark:text-gray-200 tracking-tight"
       >
-        Refresh
-      </button>
-      <button
-        @click="showAddClient = true"
-        class="px-4 py-2 bg-blue-600 text-white rounded font-semibold hover:bg-blue-700 transition"
-      >
-        Tambah Client
-      </button>
+        Clients
+      </h1>
+      <div class="flex gap-2">
+        <button
+          @click="fetchClients"
+          class="inline-flex items-center gap-1 px-3 py-1.5 rounded-lg bg-emerald-50 text-emerald-700 border border-emerald-100 hover:bg-emerald-100 transition text-sm font-semibold shadow-sm focus:outline-none focus:ring-2 focus:ring-emerald-200"
+          aria-label="Refresh"
+          type="button"
+        >
+          <svg
+            class="w-4 h-4"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+            viewBox="0 0 24 24"
+          >
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              d="M4 4v5h.582M20 20v-5h-.581M5 9A7 7 0 0112 5a7 7 0 017 7c0 1.657-.672 3.157-1.764 4.243M19 15a7 7 0 01-7 4 7 7 0 01-7-7c0-1.657.672-3.157 1.764-4.243"
+            />
+          </svg>
+          Refresh
+        </button>
+        <button
+          @click="showAddClient = true"
+          class="inline-flex items-center gap-1 px-3 py-1.5 rounded-lg bg-white text-emerald-700 border border-emerald-200 hover:bg-emerald-50 transition text-sm font-semibold shadow-sm focus:outline-none focus:ring-2 focus:ring-emerald-200"
+          aria-label="Tambah Client"
+          type="button"
+        >
+          <svg
+            class="w-4 h-4"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+            viewBox="0 0 24 24"
+          >
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              d="M12 4v16m8-8H4"
+            />
+          </svg>
+          Tambah Client
+        </button>
+      </div>
     </div>
     <div
       v-if="showAddClient"
       class="fixed inset-0 bg-black bg-opacity-40 flex items-center justify-center z-50"
     >
       <div
-        class="bg-white dark:bg-gray-800 rounded-xl shadow-2xl p-6 min-w-[320px] text-center relative border border-gray-200 dark:border-gray-700"
+        class="bg-white dark:bg-gray-900 rounded-2xl shadow-2xl p-8 min-w-[340px] w-full max-w-sm text-center border border-gray-100 dark:border-gray-800 relative flex flex-col gap-4"
       >
-        <h3 class="text-lg font-semibold mb-4">Tambah Client</h3>
+        <h3 class="text-lg font-semibold text-gray-700 dark:text-gray-100 mb-2">
+          Tambah Client
+        </h3>
         <form @submit.prevent="addClient" class="flex flex-col gap-3 mt-2">
           <PrelineInput
             v-model="newClientId"
@@ -70,20 +108,49 @@
           <div class="flex gap-2 justify-center mt-2">
             <button
               type="submit"
-              class="px-4 py-2 bg-emerald-600 text-white rounded-lg font-semibold hover:bg-emerald-700 transition-all shadow-sm focus:outline-none focus:ring-2 focus:ring-emerald-400"
+              class="inline-flex items-center gap-1 px-4 py-2 rounded-lg bg-emerald-50 text-emerald-700 border border-emerald-100 hover:bg-emerald-100 transition text-sm font-semibold shadow-sm focus:outline-none focus:ring-2 focus:ring-emerald-200 disabled:opacity-60 disabled:cursor-not-allowed"
+              :disabled="loading"
             >
+              <svg
+                class="w-4 h-4"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  d="M12 4v16m8-8H4"
+                />
+              </svg>
               Tambah
             </button>
             <button
               type="button"
               @click="showAddClient = false"
-              class="px-4 py-2 bg-red-500 text-white rounded-lg font-semibold hover:bg-red-700 transition-all shadow-sm focus:outline-none focus:ring-2 focus:ring-red-400"
+              class="inline-flex items-center gap-1 px-4 py-2 rounded-lg bg-white text-gray-700 dark:text-gray-200 border border-gray-200 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-800 transition text-sm font-semibold shadow-sm focus:outline-none focus:ring-2 focus:ring-gray-200"
             >
+              <svg
+                class="w-4 h-4"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  d="M6 18L18 6M6 6l12 12"
+                />
+              </svg>
               Batal
             </button>
           </div>
         </form>
-        <div v-if="addError" class="text-red-500 mt-2">{{ addError }}</div>
+        <div v-if="addError" class="text-red-500 mt-2 text-sm">
+          {{ addError }}
+        </div>
       </div>
     </div>
     <div v-if="loading" class="text-gray-500 dark:text-gray-300 mt-4">
@@ -105,12 +172,39 @@
           <div
             v-for="(client, idx) in clients"
             :key="client"
-            class="grid grid-cols-5 items-center bg-white dark:bg-gray-900 hover:bg-emerald-50 dark:hover:bg-gray-800 transition-all rounded-lg shadow-sm mb-1"
+            :class="[
+              'grid grid-cols-5 items-center mb-1',
+              editClientId === client
+                ? '!bg-transparent !ring-0 !shadow-none !border-0 !p-0 !m-0 !rounded-none'
+                : 'bg-white dark:bg-gray-900 hover:bg-emerald-50 dark:hover:bg-gray-800 transition-all rounded-lg shadow-sm',
+            ]"
+            :style="
+              editClientId === client
+                ? 'border:none;background:transparent;box-shadow:none;padding:0;margin:0;'
+                : ''
+            "
           >
-            <div class="px-4 py-2 text-gray-900 dark:text-white">
+            <div
+              :class="
+                editClientId === client
+                  ? '!px-0 !py-0'
+                  : 'px-4 py-2 text-gray-900 dark:text-white'
+              "
+            >
               {{ idx + 1 }}
             </div>
-            <div class="px-4 py-2 text-gray-900 dark:text-white">
+            <div
+              :class="[
+                editClientId === client
+                  ? '!bg-transparent !border-0 !p-0 !shadow-none'
+                  : 'px-4 py-2 text-gray-900 dark:text-white',
+              ]"
+              :style="
+                editClientId === client
+                  ? 'all:unset; background:transparent; border:none; box-shadow:none; padding:0; margin:0;'
+                  : ''
+              "
+            >
               <span v-if="editClientId !== client">{{ client }}</span>
               <PrelineInput
                 v-else
@@ -120,8 +214,9 @@
                   statuses[client] === 'ready' ||
                   statuses[client] === 'connected'
                 "
-                class="w-full !bg-white !dark:bg-gray-900 !text-gray-900 !dark:text-white border border-gray-300 dark:border-gray-600 focus:ring-2 focus:ring-emerald-400"
+                class="w-full border border-emerald-400 dark:border-emerald-600 focus:ring-2 focus:ring-emerald-400 rounded-lg px-3 py-1.5 text-sm bg-transparent shadow-none transition placeholder-gray-400 !m-0"
                 placeholder="Edit Client ID"
+                autofocus
               />
             </div>
             <div class="px-4 py-2 text-gray-900 dark:text-white">
@@ -135,103 +230,131 @@
               <span v-else class="text-gray-400">-</span>
             </div>
             <div class="px-4 py-2 relative flex justify-end">
-              <ClientActionMenu>
-                <template #trigger>
-                  <button
-                    @mousedown.stop
-                    class="inline-flex items-center justify-center w-9 h-9 rounded-full hover:bg-gray-100 dark:hover:bg-gray-800 transition focus:outline-none focus:ring-2 focus:ring-emerald-400"
-                    title="Aksi"
-                    type="button"
-                  >
-                    <svg
-                      class="w-5 h-5 text-gray-500 dark:text-gray-300"
-                      fill="currentColor"
-                      viewBox="0 0 20 20"
-                    >
-                      <circle cx="4" cy="10" r="1.5" />
-                      <circle cx="10" cy="10" r="1.5" />
-                      <circle cx="16" cy="10" r="1.5" />
-                    </svg>
-                  </button>
-                </template>
-                <router-link
-                  :to="{ name: 'ClientDetail', params: { clientId: client } }"
-                  class="block w-full text-left px-4 py-2 text-sm text-gray-700 dark:text-gray-200 hover:bg-emerald-50 dark:hover:bg-gray-800 rounded transition"
-                  >Detail</router-link
-                >
+              <template v-if="editClientId === client">
                 <button
-                  v-if="editClientId !== client"
-                  @click="startEdit(client)"
-                  :disabled="
-                    statuses[client] === 'ready' ||
-                    statuses[client] === 'connected'
-                  "
-                  class="block w-full text-left px-4 py-2 text-sm text-yellow-700 dark:text-yellow-300 hover:bg-yellow-50 dark:hover:bg-gray-800 rounded disabled:opacity-60 disabled:cursor-not-allowed transition"
-                >
-                  Edit
-                </button>
-                <button
-                  v-else
                   @click="saveEdit(client)"
                   :disabled="
                     statuses[client] === 'ready' ||
                     statuses[client] === 'connected'
                   "
-                  class="block w-full text-left px-4 py-2 text-sm text-emerald-700 dark:text-emerald-300 hover:bg-emerald-50 dark:hover:bg-gray-800 rounded disabled:opacity-60 disabled:cursor-not-allowed transition"
+                  class="inline-flex items-center gap-1 px-3 py-1.5 rounded-lg bg-emerald-50 text-emerald-700 border border-emerald-100 hover:bg-emerald-100 transition text-sm font-semibold shadow-sm focus:outline-none focus:ring-2 focus:ring-emerald-200 disabled:opacity-60 disabled:cursor-not-allowed mr-2"
                 >
+                  <svg
+                    class="w-4 h-4"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="2"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      d="M5 13l4 4L19 7"
+                    />
+                  </svg>
                   Simpan
                 </button>
                 <button
-                  v-if="editClientId === client"
                   @click="cancelEdit"
-                  class="block w-full text-left px-4 py-2 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-800 rounded transition"
+                  class="inline-flex items-center gap-1 px-3 py-1.5 rounded-lg bg-white text-gray-700 dark:text-gray-200 border border-gray-200 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-800 transition text-sm font-semibold shadow-sm focus:outline-none focus:ring-2 focus:ring-gray-200"
                 >
+                  <svg
+                    class="w-4 h-4"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="2"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      d="M6 18L18 6M6 6l12 12"
+                    />
+                  </svg>
                   Batal
                 </button>
-                <button
-                  @click="confirmDelete(client)"
-                  class="block w-full text-left px-4 py-2 text-sm text-red-700 dark:text-red-400 hover:bg-red-50 dark:hover:bg-gray-800 rounded transition"
-                >
-                  Hapus
-                </button>
-                <button
-                  v-if="
-                    statuses[client] === 'ready' ||
-                    statuses[client] === 'connected'
-                  "
-                  @click="confirmDisconnect(client, 'logout')"
-                  class="block w-full text-left px-4 py-2 text-sm text-orange-700 dark:text-orange-300 hover:bg-orange-50 dark:hover:bg-gray-800 rounded transition"
-                >
-                  Logout (QR Baru)
-                </button>
-                <button
-                  v-if="
-                    statuses[client] === 'ready' ||
-                    statuses[client] === 'connected'
-                  "
-                  @click="confirmDisconnect(client, 'destroy')"
-                  class="block w-full text-left px-4 py-2 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-800 rounded transition"
-                >
-                  Putus Koneksi (Session Tetap)
-                </button>
-                <button
-                  v-if="
-                    statuses[client] === 'disconnected' ||
-                    statuses[client] === 'destroyed'
-                  "
-                  @click="reconnectClient(client)"
-                  class="block w-full text-left px-4 py-2 text-sm text-green-700 dark:text-green-300 hover:bg-green-50 dark:hover:bg-gray-800 rounded transition"
-                >
-                  Reconnect
-                </button>
-                <button
-                  v-if="statuses[client] === 'qr'"
-                  @click="showQR(client)"
-                  class="block w-full text-left px-4 py-2 text-sm text-blue-700 dark:text-blue-300 hover:bg-blue-50 dark:hover:bg-gray-800 rounded transition"
-                >
-                  Scan QR
-                </button>
-              </ClientActionMenu>
+              </template>
+              <template v-else>
+                <ClientActionMenu>
+                  <template #trigger>
+                    <button
+                      @mousedown.stop
+                      class="inline-flex items-center justify-center w-9 h-9 rounded-full hover:bg-gray-100 dark:hover:bg-gray-800 transition focus:outline-none focus:ring-2 focus:ring-emerald-400"
+                      title="Aksi"
+                      type="button"
+                    >
+                      <svg
+                        class="w-5 h-5 text-gray-500 dark:text-gray-300"
+                        fill="currentColor"
+                        viewBox="0 0 20 20"
+                      >
+                        <circle cx="4" cy="10" r="1.5" />
+                        <circle cx="10" cy="10" r="1.5" />
+                        <circle cx="16" cy="10" r="1.5" />
+                      </svg>
+                    </button>
+                  </template>
+                  <router-link
+                    :to="{ name: 'ClientDetail', params: { clientId: client } }"
+                    class="block w-full text-left px-4 py-2 text-sm text-gray-700 dark:text-gray-200 hover:bg-emerald-50 dark:hover:bg-gray-800 rounded transition"
+                    >Detail</router-link
+                  >
+                  <button
+                    v-if="editClientId !== client"
+                    @click="startEdit(client)"
+                    :disabled="
+                      statuses[client] === 'ready' ||
+                      statuses[client] === 'connected'
+                    "
+                    class="block w-full text-left px-4 py-2 text-sm text-yellow-700 dark:text-yellow-300 hover:bg-yellow-50 dark:hover:bg-gray-800 rounded transition disabled:opacity-60 disabled:cursor-not-allowed font-semibold"
+                  >
+                    Edit
+                  </button>
+                  <button
+                    @click="confirmDelete(client)"
+                    class="block w-full text-left px-4 py-2 text-sm text-red-700 dark:text-red-400 hover:bg-red-50 dark:hover:bg-gray-800 rounded transition font-semibold"
+                  >
+                    Hapus
+                  </button>
+                  <button
+                    v-if="
+                      statuses[client] === 'ready' ||
+                      statuses[client] === 'connected'
+                    "
+                    @click="confirmDisconnect(client, 'logout')"
+                    class="block w-full text-left px-4 py-2 text-sm text-orange-700 dark:text-orange-300 hover:bg-orange-50 dark:hover:bg-gray-800 rounded transition"
+                  >
+                    Logout (QR Baru)
+                  </button>
+                  <button
+                    v-if="
+                      statuses[client] === 'ready' ||
+                      statuses[client] === 'connected'
+                    "
+                    @click="confirmDisconnect(client, 'destroy')"
+                    class="block w-full text-left px-4 py-2 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-800 rounded transition"
+                  >
+                    Putus Koneksi (Session Tetap)
+                  </button>
+                  <button
+                    v-if="
+                      statuses[client] === 'disconnected' ||
+                      statuses[client] === 'destroyed'
+                    "
+                    @click="reconnectClient(client)"
+                    class="block w-full text-left px-4 py-2 text-sm text-green-700 dark:text-green-300 hover:bg-green-50 dark:hover:bg-gray-800 rounded transition"
+                  >
+                    Reconnect
+                  </button>
+                  <button
+                    v-if="statuses[client] === 'qr'"
+                    @click="showQR(client)"
+                    class="block w-full text-left px-4 py-2 text-sm text-blue-700 dark:text-blue-300 hover:bg-blue-50 dark:hover:bg-gray-800 rounded transition"
+                  >
+                    Scan QR
+                  </button>
+                </ClientActionMenu>
+              </template>
             </div>
           </div>
         </div>

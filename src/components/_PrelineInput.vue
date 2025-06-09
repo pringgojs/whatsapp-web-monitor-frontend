@@ -1,11 +1,11 @@
 <template>
-  <div class="relative">
+  <div class="w-full relative p-0 m-0 bg-transparent border-0 shadow-none">
     <input
       :type="type"
       :placeholder="placeholder"
       v-model="modelValueProxy"
       :class="[
-        'block w-full px-4 py-3 text-gray-900 dark:text-white bg-gray-50 dark:bg-gray-700 border border-gray-300 dark:border-gray-700 rounded-lg focus:outline-none',
+        'w-full px-4 py-3 text-gray-900 dark:text-white bg-gray-50 dark:bg-gray-700 border border-gray-300 dark:border-gray-700 rounded-lg focus:outline-none',
         error
           ? 'border-red-500 focus:border-red-500 focus:ring-2 focus:ring-red-400'
           : 'focus:border-emerald-500 focus:ring-2 focus:ring-emerald-400',
