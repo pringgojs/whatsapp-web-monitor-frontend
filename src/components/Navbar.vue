@@ -36,7 +36,11 @@
             >Dashboard</router-link
           >
         </li>
-        <li class="relative group">
+        <li
+          class="relative"
+          @mouseenter="openClientMenu"
+          @mouseleave="closeClientMenu"
+        >
           <button
             class="px-3 py-2 rounded hover:bg-emerald-50 dark:hover:bg-gray-800 transition flex items-center gap-1"
           >
@@ -56,7 +60,10 @@
             </svg>
           </button>
           <ul
-            class="absolute left-0 mt-2 min-w-[160px] bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded shadow-lg opacity-0 group-hover:opacity-100 pointer-events-none group-hover:pointer-events-auto transition-opacity duration-200"
+            v-show="showClientMenu"
+            class="absolute left-0 mt-2 min-w-[160px] bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded shadow-lg transition-opacity duration-200 z-20"
+            @mouseenter="openClientMenu"
+            @mouseleave="closeClientMenu"
           >
             <li>
               <router-link
@@ -150,7 +157,7 @@
 </template>
 
 <script setup>
-import { ref, computed } from "vue";
+import { ref, computed, onMounted, watch } from "vue";
 import { useRouter } from "vue-router";
 
 const router = useRouter();
@@ -166,13 +173,72 @@ const isAdmin = computed(() => {
     return false;
   }
 });
-const isDark = ref(document.documentElement.classList.contains("dark"));
-function toggleDark(val) {
-  isDark.value = val;
-  document.documentElement.classList.toggle("dark", val);
+
+const themePref = ref(localStorage.getItem("theme"));
+const isDark = ref(false);
+
+function applyTheme(theme) {
+  const root = document.documentElement;
+  if (theme === "dark") {
+    root.classList.add("dark");
+    isDark.value = true;
+  } else {
+    root.classList.remove("dark");
+    isDark.value = false;
+  }
 }
+
+function detectSystemTheme() {
+  return window.matchMedia("(prefers-color-scheme: dark)").matches
+    ? "dark"
+    : "light";
+}
+
+function setTheme(theme) {
+  localStorage.setItem("theme", theme);
+  themePref.value = theme;
+  applyTheme(theme);
+}
+
+function toggleDark(forceDark) {
+  const theme = forceDark ? "dark" : "light";
+  setTheme(theme);
+}
+
+onMounted(() => {
+  // Cek preferensi user di localStorage, jika tidak ada ikuti OS
+  let theme = localStorage.getItem("theme");
+  if (!theme) {
+    theme = detectSystemTheme();
+  }
+  applyTheme(theme);
+  // Update jika user ganti preferensi OS, kecuali sudah override manual
+  window
+    .matchMedia("(prefers-color-scheme: dark)")
+    .addEventListener("change", (e) => {
+      if (!localStorage.getItem("theme")) {
+        applyTheme(e.matches ? "dark" : "light");
+      }
+    });
+});
+
+watch(themePref, (val) => {
+  applyTheme(val);
+});
+
 function logout() {
   localStorage.removeItem("token");
   router.push("/login");
+}
+const showClientMenu = ref(false);
+let submenuTimer = null;
+function openClientMenu() {
+  clearTimeout(submenuTimer);
+  showClientMenu.value = true;
+}
+function closeClientMenu() {
+  submenuTimer = setTimeout(() => {
+    showClientMenu.value = false;
+  }, 120); // delay agar user bisa pindah ke submenu
 }
 </script>
