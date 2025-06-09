@@ -1,17 +1,6 @@
 <template>
   <div>
-    <nav class="navbar">
-      <ul>
-        <li><router-link to="/">Dashboard</router-link></li>
-        <li><router-link to="/scan-qr">Scan QR Code</router-link></li>
-        <li><router-link to="/status">Cek Status Client</router-link></li>
-        <li><router-link to="/clients">Daftar Client</router-link></li>
-        <li v-if="isAdmin">
-          <router-link to="/users">Manajemen User</router-link>
-        </li>
-        <li><a href="#" @click.prevent="logout">Logout</a></li>
-      </ul>
-    </nav>
+    <!-- Hapus navbar lama di sini, hanya tampilkan konten dashboard utama -->
     <div class="dashboard-container">
       <nav class="breadcrumb">
         <router-link to="/">Home</router-link> / Dashboard
@@ -66,42 +55,6 @@ const fetchSummary = async () => {
 </script>
 
 <style scoped>
-.navbar {
-  background: var(--navbar-bg, #23272f);
-  padding: 0.5rem 0;
-  margin-bottom: 2rem;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
-}
-.navbar ul {
-  display: flex;
-  justify-content: center;
-  gap: 2rem;
-  list-style: none;
-  margin: 0;
-  padding: 0;
-}
-.navbar a,
-.navbar .router-link-active {
-  color: var(--navbar-link, #fff);
-  text-decoration: none;
-  font-weight: 500;
-  font-size: 1.1rem;
-  transition: color 0.2s;
-}
-.navbar a:hover,
-.navbar .router-link-exact-active {
-  color: #42b983;
-}
-@media (prefers-color-scheme: light) {
-  .navbar {
-    background: var(--navbar-bg-light, #fff);
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
-  }
-  .navbar a,
-  .navbar .router-link-active {
-    color: var(--navbar-link-light, #23272f);
-  }
-}
 .dashboard-container {
   max-width: 700px;
   margin: 40px auto;
