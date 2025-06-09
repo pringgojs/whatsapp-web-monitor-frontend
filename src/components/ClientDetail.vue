@@ -118,12 +118,6 @@
             Kirim
           </button>
         </form>
-        <div
-          v-if="msgResult"
-          class="mt-3 text-emerald-600 dark:text-emerald-400"
-        >
-          {{ msgResult }}
-        </div>
       </div>
       <div v-else-if="activeMenu === 'webhook'">
         <h3 class="text-lg font-semibold mb-2 text-gray-700 dark:text-gray-200">
@@ -146,12 +140,6 @@
             Simpan
           </button>
         </form>
-        <div
-          v-if="webhookResult"
-          class="mt-3 text-emerald-600 dark:text-emerald-400"
-        >
-          {{ webhookResult }}
-        </div>
       </div>
       <div v-else-if="activeMenu === 'group'">
         <h3 class="text-lg font-semibold mb-2 text-gray-700 dark:text-gray-200">
@@ -172,7 +160,6 @@
             {{ g.name }} <span class="text-xs text-gray-400">({{ g.id }})</span>
           </li>
         </ul>
-        <div v-if="groupError" class="text-red-500 mt-3">{{ groupError }}</div>
       </div>
     </main>
   </div>
@@ -233,7 +220,6 @@ watch(
     // Reset form kirim pesan
     to.value = "";
     message.value = "";
-    msgResult.value = "";
     // Fetch info client baru
     try {
       const token = localStorage.getItem("token");
@@ -270,9 +256,7 @@ watch(
 // Kirim Pesan
 const to = ref("");
 const message = ref("");
-const msgResult = ref("");
 const sendMessage = async () => {
-  msgResult.value = "";
   try {
     const token = localStorage.getItem("token");
     const res = await fetch(`${API_BASE_URL}/messages`, {
@@ -289,25 +273,20 @@ const sendMessage = async () => {
     });
     const data = await res.json();
     if (res.ok) {
-      msgResult.value = "Pesan berhasil dikirim!";
       notification("success", "Pesan berhasil dikirim!");
       to.value = "";
       message.value = "";
     } else {
-      msgResult.value = data.error || "Gagal mengirim pesan.";
-      notification("error", msgResult.value);
+      notification("error", data.error || "Gagal mengirim pesan.");
     }
   } catch (e) {
-    msgResult.value = "Gagal mengirim pesan.";
     notification("error", "Gagal mengirim pesan.");
   }
 };
 
 // Webhook
 const webhookUrl = ref("");
-const webhookResult = ref("");
 const saveWebhook = async () => {
-  webhookResult.value = "";
   try {
     const token = localStorage.getItem("token");
     const res = await fetch(
@@ -323,14 +302,11 @@ const saveWebhook = async () => {
     );
     const data = await res.json();
     if (res.ok) {
-      webhookResult.value = "Webhook berhasil disimpan.";
       notification("success", "Webhook berhasil disimpan.");
     } else {
-      webhookResult.value = data.error || "Gagal menyimpan webhook.";
-      notification("error", webhookResult.value);
+      notification("error", data.error || "Gagal menyimpan webhook.");
     }
   } catch (e) {
-    webhookResult.value = "Gagal menyimpan webhook.";
     notification("error", "Gagal menyimpan webhook.");
   }
 };
@@ -357,9 +333,7 @@ onMounted(async () => {
 
 // Group
 const groups = ref([]);
-const groupError = ref("");
 const fetchGroups = async () => {
-  groupError.value = "";
   try {
     const token = localStorage.getItem("token");
     const res = await fetch(
@@ -372,11 +346,9 @@ const fetchGroups = async () => {
     if (res.ok && Array.isArray(data.groups)) {
       groups.value = data.groups;
     } else {
-      groupError.value = data.error || "Gagal memuat group.";
-      notification("error", groupError.value);
+      notification("error", data.error || "Gagal memuat group.");
     }
   } catch (e) {
-    groupError.value = "Gagal memuat group.";
     notification("error", "Gagal memuat group.");
   }
 };

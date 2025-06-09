@@ -287,6 +287,7 @@
 <script setup>
 import { ref, onMounted, watch } from "vue";
 import { API_BASE_URL } from "../config";
+import { notification } from "../composables/useNotification";
 
 const clients = ref([]);
 const loading = ref(false);
@@ -356,7 +357,6 @@ const fetchStatus = async (clientId) => {
 };
 
 const addClient = async () => {
-  addError.value = "";
   if (!newClientId.value) return;
   try {
     const response = await fetch(
@@ -368,14 +368,15 @@ const addClient = async () => {
     );
     const data = await response.json();
     if (response.ok) {
+      notification("success", "Client berhasil ditambahkan.");
       showAddClient.value = false;
       newClientId.value = "";
       fetchClients();
     } else {
-      addError.value = data.error || "Gagal menambah client.";
+      notification("error", data.error || "Gagal menambah client.");
     }
   } catch (e) {
-    addError.value = "Gagal menambah client.";
+    notification("error", "Gagal menambah client.");
   }
 };
 
@@ -393,16 +394,17 @@ const saveEdit = async (oldClientId) => {
     statuses.value[oldClientId] === "ready" ||
     statuses.value[oldClientId] === "connected"
   ) {
-    error.value = "Tidak bisa edit client yang sedang terhubung.";
+    notification("error", "Tidak bisa edit client yang sedang terhubung.");
     return;
   }
   try {
     await deleteClient(oldClientId, true);
     await addClientById(editClientIdInput.value);
+    notification("success", "Client berhasil diedit.");
     editClientId.value = "";
     fetchClients();
   } catch (e) {
-    error.value = "Gagal mengedit client.";
+    notification("error", "Gagal mengedit client.");
   }
 };
 
@@ -423,9 +425,17 @@ const deleteClient = async (clientId, silent = false) => {
       method: "DELETE",
       headers: { ...getAuthHeaders() },
     });
-    if (!silent) fetchClients();
+    if (!silent) {
+      if (response.ok) {
+        notification("success", "Client berhasil dihapus.");
+        fetchClients();
+      } else {
+        const data = await response.json();
+        notification("error", data.error || "Gagal menghapus client.");
+      }
+    }
   } catch (e) {
-    if (!silent) error.value = "Gagal menghapus client.";
+    if (!silent) notification("error", "Gagal menghapus client.");
   }
 };
 
@@ -465,10 +475,19 @@ const doDisconnectClient = async () => {
       disconnectType.value === "destroy"
         ? `${API_BASE_URL}/clients/${clientToDisconnect.value}/destroy`
         : `${API_BASE_URL}/clients/${clientToDisconnect.value}/disconnect`;
-    await fetch(endpoint, { method: "POST", headers: { ...getAuthHeaders() } });
-    fetchClients();
+    const response = await fetch(endpoint, {
+      method: "POST",
+      headers: { ...getAuthHeaders() },
+    });
+    if (response.ok) {
+      notification("success", "Client berhasil disconnect.");
+      fetchClients();
+    } else {
+      const data = await response.json();
+      notification("error", data.error || "Gagal disconnect client.");
+    }
   } catch (e) {
-    error.value = "Gagal disconnect client.";
+    notification("error", "Gagal disconnect client.");
   } finally {
     showDisconnectConfirm.value = false;
     clientToDisconnect.value = "";
@@ -482,6 +501,7 @@ const reconnectClient = async (clientId) => {
       method: "POST",
       headers: { "Content-Type": "application/json", ...getAuthHeaders() },
     });
+    notification("success", "Client berhasil direconnect.");
     // Mulai polling status hingga berubah dari destroyed/disconnected/initializing
     const pollStatus = async (attempt = 0) => {
       await fetchStatus(clientId);
@@ -501,7 +521,7 @@ const reconnectClient = async (clientId) => {
     };
     pollStatus();
   } catch (e) {
-    error.value = "Gagal reconnect client.";
+    notification("error", "Gagal reconnect client.");
     reconnectingClients.value[clientId] = false;
   }
 };
