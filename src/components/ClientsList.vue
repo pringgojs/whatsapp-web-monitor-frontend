@@ -447,54 +447,155 @@
     >
       Belum ada client terdaftar.
     </div>
-  </div>
-  <div
-    v-if="showDeleteConfirm"
-    class="fixed inset-0 bg-black bg-opacity-40 flex items-center justify-center z-50"
-  >
+
+    <!-- Dialog Konfirmasi Hapus Client -->
     <div
-      class="bg-white dark:bg-gray-800 rounded-lg shadow-xl p-6 min-w-[300px] text-center relative"
+      v-if="showDeleteConfirm"
+      class="fixed inset-0 bg-black bg-opacity-40 flex items-center justify-center z-50"
     >
-      <h3 class="text-lg font-semibold mb-4">Konfirmasi Hapus Client</h3>
-      <p class="mb-4">{{ deleteWarning }}</p>
-      <div class="flex gap-2 justify-center">
-        <button
-          @click="doDeleteClient"
-          class="px-4 py-2 bg-red-500 text-white rounded font-semibold hover:bg-red-700 transition"
-        >
-          Ya, Hapus
-        </button>
+      <div
+        class="relative bg-white dark:bg-gray-900 rounded-2xl shadow-2xl p-8 min-w-[340px] w-full max-w-xs flex flex-col items-center border border-gray-100 dark:border-gray-800"
+      >
         <button
           @click="showDeleteConfirm = false"
-          class="px-4 py-2 bg-gray-500 text-white rounded font-semibold hover:bg-gray-700 transition"
+          class="absolute top-3 right-3 w-8 h-8 flex items-center justify-center rounded-full bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700 text-gray-500 dark:text-gray-300 focus:outline-none focus:ring-2 focus:ring-emerald-400 transition"
+          aria-label="Tutup"
         >
-          Batal
+          <svg
+            class="w-5 h-5"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+            viewBox="0 0 24 24"
+          >
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              d="M6 18L18 6M6 6l12 12"
+            />
+          </svg>
         </button>
+        <div class="flex flex-col items-center gap-2 mt-2 mb-4">
+          <svg
+            class="w-12 h-12 text-red-500"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+            viewBox="0 0 24 24"
+          >
+            <circle
+              cx="12"
+              cy="12"
+              r="10"
+              stroke="currentColor"
+              stroke-width="2"
+            />
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              d="M6 18L18 6M6 6l12 12"
+            />
+          </svg>
+          <h3
+            class="text-xl font-bold text-gray-700 dark:text-gray-100 text-center mt-2 mb-1"
+          >
+            Konfirmasi Hapus Client
+          </h3>
+          <p
+            class="text-gray-600 dark:text-gray-300 text-center text-base mb-2"
+          >
+            {{ deleteWarning }}
+          </p>
+        </div>
+        <div class="flex gap-3 justify-center mt-2 w-full">
+          <button
+            @click="doDeleteClient"
+            class="flex-1 px-4 py-2 rounded-lg bg-red-600 hover:bg-red-700 text-white font-semibold transition text-base shadow focus:outline-none focus:ring-2 focus:ring-red-400"
+          >
+            Ya, Hapus
+          </button>
+          <button
+            @click="showDeleteConfirm = false"
+            class="flex-1 px-4 py-2 rounded-lg bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 text-gray-700 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-gray-800 font-semibold transition text-base shadow focus:outline-none focus:ring-2 focus:ring-gray-300"
+          >
+            Batal
+          </button>
+        </div>
       </div>
     </div>
-  </div>
-  <div
-    v-if="showDisconnectConfirm"
-    class="fixed inset-0 bg-black bg-opacity-40 flex items-center justify-center z-50"
-  >
+    <!-- Dialog Konfirmasi Disconnect Client -->
     <div
-      class="bg-white dark:bg-gray-800 rounded-lg shadow-xl p-6 min-w-[300px] text-center relative"
+      v-if="showDisconnectConfirm"
+      class="fixed inset-0 bg-black bg-opacity-40 flex items-center justify-center z-50"
     >
-      <h3 class="text-lg font-semibold mb-4">Konfirmasi Disconnect Client</h3>
-      <p class="mb-4">{{ disconnectWarning }}</p>
-      <div class="flex gap-2 justify-center">
-        <button
-          @click="doDisconnectClient"
-          class="px-4 py-2 bg-orange-500 text-white rounded font-semibold hover:bg-orange-600 transition"
-        >
-          Ya, Disconnect
-        </button>
+      <div
+        class="relative bg-white dark:bg-gray-900 rounded-2xl shadow-2xl p-8 min-w-[340px] w-full max-w-xs flex flex-col items-center border border-gray-100 dark:border-gray-800"
+      >
         <button
           @click="showDisconnectConfirm = false"
-          class="px-4 py-2 bg-gray-500 text-white rounded font-semibold hover:bg-gray-700 transition"
+          class="absolute top-3 right-3 w-8 h-8 flex items-center justify-center rounded-full bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700 text-gray-500 dark:text-gray-300 focus:outline-none focus:ring-2 focus:ring-emerald-400 transition"
+          aria-label="Tutup"
         >
-          Batal
+          <svg
+            class="w-5 h-5"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+            viewBox="0 0 24 24"
+          >
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              d="M6 18L18 6M6 6l12 12"
+            />
+          </svg>
         </button>
+        <div class="flex flex-col items-center gap-2 mt-2 mb-4">
+          <svg
+            class="w-12 h-12 text-orange-400"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+            viewBox="0 0 24 24"
+          >
+            <circle
+              cx="12"
+              cy="12"
+              r="10"
+              stroke="currentColor"
+              stroke-width="2"
+            />
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              d="M6 18L18 6M6 6l12 12"
+            />
+          </svg>
+          <h3
+            class="text-xl font-bold text-gray-700 dark:text-gray-100 text-center mt-2 mb-1"
+          >
+            Konfirmasi Disconnect Client
+          </h3>
+          <p
+            class="text-gray-600 dark:text-gray-300 text-center text-base mb-2"
+          >
+            {{ disconnectWarning }}
+          </p>
+        </div>
+        <div class="flex gap-3 justify-center mt-2 w-full">
+          <button
+            @click="doDisconnectClient"
+            class="flex-1 px-4 py-2 rounded-lg bg-orange-500 hover:bg-orange-600 text-white font-semibold transition text-base shadow focus:outline-none focus:ring-2 focus:ring-orange-300"
+          >
+            Ya, Disconnect
+          </button>
+          <button
+            @click="showDisconnectConfirm = false"
+            class="flex-1 px-4 py-2 rounded-lg bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 text-gray-700 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-gray-800 font-semibold transition text-base shadow focus:outline-none focus:ring-2 focus:ring-gray-300"
+          >
+            Batal
+          </button>
+        </div>
       </div>
     </div>
   </div>
