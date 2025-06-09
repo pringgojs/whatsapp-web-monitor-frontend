@@ -276,7 +276,11 @@ const sendMessage = async () => {
         "Content-Type": "application/json",
         Authorization: `Bearer ${token}`,
       },
-      body: JSON.stringify({ clientId, to: to.value, message: message.value }),
+      body: JSON.stringify({
+        clientId: clientId.value,
+        to: to.value,
+        message: message.value,
+      }),
     });
     const data = await res.json();
     if (res.ok) {
