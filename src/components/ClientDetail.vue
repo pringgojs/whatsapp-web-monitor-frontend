@@ -1,16 +1,16 @@
 <template>
   <div
-    class="flex flex-col md:flex-row min-h-[400px] bg-white dark:bg-gray-900 rounded-xl shadow-lg mx-auto mt-10 max-w-4xl"
+    class="flex flex-col md:flex-row min-h-[400px] bg-white dark:bg-gray-900 rounded-2xl shadow-xl mx-auto mt-10 max-w-4xl border border-gray-200 dark:border-gray-800"
   >
     <aside
-      class="w-full md:w-56 bg-white dark:bg-gray-800 text-gray-900 dark:text-white rounded-t-xl md:rounded-l-xl md:rounded-tr-none p-6 flex-shrink-0"
+      class="w-full md:w-56 bg-white dark:bg-gray-800 text-gray-900 dark:text-white rounded-t-2xl md:rounded-l-2xl md:rounded-tr-none p-6 flex-shrink-0 border-b md:border-b-0 md:border-r border-gray-100 dark:border-gray-800"
     >
-      <div class="mb-6 border-b border-gray-700 pb-4">
+      <div class="mb-6 border-b border-gray-200 dark:border-gray-700 pb-4">
         <div class="text-xs text-gray-400">Client ID:</div>
         <div class="relative">
           <button
             @click="showClientDropdown = !showClientDropdown"
-            class="font-bold text-lg break-all w-full text-left flex items-center justify-between focus:outline-none focus:ring-2 focus:ring-emerald-400 rounded px-2 py-1 hover:bg-gray-100 dark:hover:bg-gray-700"
+            class="font-bold text-lg break-all w-full text-left flex items-center justify-between focus:outline-none focus:ring-2 focus:ring-emerald-400 rounded-lg px-2 py-1 hover:bg-gray-100 dark:hover:bg-gray-700 transition"
           >
             {{ clientId }}
             <svg
@@ -29,13 +29,13 @@
           </button>
           <div
             v-if="showClientDropdown"
-            class="absolute z-10 mt-1 w-full bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded shadow-lg"
+            class="absolute z-10 mt-1 w-full bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl shadow-lg"
           >
             <ul>
               <li v-for="c in clients" :key="c">
                 <button
                   @click="selectClient(c)"
-                  class="w-full text-left px-3 py-2 hover:bg-emerald-100 dark:hover:bg-emerald-700 rounded text-gray-900 dark:text-white"
+                  class="w-full text-left px-3 py-2 hover:bg-emerald-100 dark:hover:bg-emerald-700 rounded-lg text-gray-900 dark:text-white transition"
                   :class="{ 'bg-emerald-600 text-white': c === clientId }"
                 >
                   {{ c }}
@@ -45,17 +45,17 @@
           </div>
         </div>
         <div v-if="waNumber" class="text-xs text-gray-400 mt-2">Nomor WA:</div>
-        <div v-if="waNumber" class="font-semibold text-emerald-300 break-all">
+        <div v-if="waNumber" class="font-semibold text-emerald-400 break-all">
           {{ waNumber }}
         </div>
       </div>
       <ul class="space-y-2">
         <li
           :class="[
-            'cursor-pointer rounded px-4 py-2 font-semibold transition text-gray-800 dark:text-white',
+            'cursor-pointer rounded-lg px-4 py-2 font-semibold transition text-gray-800 dark:text-white',
             activeMenu === 'send-message'
               ? 'bg-emerald-600 text-white'
-              : 'hover:bg-gray-700 hover:text-emerald-300',
+              : 'hover:bg-gray-100 dark:hover:bg-gray-700',
           ]"
           @click="activeMenu = 'send-message'"
         >
@@ -63,10 +63,10 @@
         </li>
         <li
           :class="[
-            'cursor-pointer rounded px-4 py-2 font-semibold transition text-gray-800 dark:text-white',
+            'cursor-pointer rounded-lg px-4 py-2 font-semibold transition text-gray-800 dark:text-white',
             activeMenu === 'webhook'
               ? 'bg-emerald-600 text-white'
-              : 'hover:bg-gray-700 hover:text-emerald-300',
+              : 'hover:bg-gray-100 dark:hover:bg-gray-700',
           ]"
           @click="activeMenu = 'webhook'"
         >
@@ -74,10 +74,10 @@
         </li>
         <li
           :class="[
-            'cursor-pointer rounded px-4 py-2 font-semibold transition text-gray-800 dark:text-white',
+            'cursor-pointer rounded-lg px-4 py-2 font-semibold transition text-gray-800 dark:text-white',
             activeMenu === 'group'
               ? 'bg-emerald-600 text-white'
-              : 'hover:bg-gray-700 hover:text-emerald-300',
+              : 'hover:bg-gray-100 dark:hover:bg-gray-700',
           ]"
           @click="activeMenu = 'group'"
         >
@@ -86,51 +86,45 @@
       </ul>
     </aside>
     <main
-      class="flex-1 p-6 bg-white dark:bg-gray-900 rounded-b-xl md:rounded-r-xl md:rounded-bl-none"
+      class="flex-1 p-8 bg-white dark:bg-gray-900 rounded-b-2xl md:rounded-r-2xl md:rounded-bl-none"
     >
-      <div class="flex items-center mb-4">
-        <router-link to="/" class="mr-2 group" title="Kembali ke Dashboard">
-          <svg
-            class="w-6 h-6 text-gray-500 group-hover:text-emerald-600 dark:text-gray-300 dark:group-hover:text-emerald-400 transition"
-            fill="none"
-            stroke="currentColor"
-            stroke-width="2"
-            viewBox="0 0 24 24"
-          >
-            <path
-              stroke-linecap="round"
-              stroke-linejoin="round"
-              d="M3 12l2-2m0 0l7-7 7 7m-9 2v7a2 2 0 002 2h4a2 2 0 002-2v-7m-6 0h6"
-            />
-          </svg>
-        </router-link>
-        <h2 class="text-xl font-bold text-gray-800 dark:text-white">
-          Detail Client: {{ clientId }}
-        </h2>
-      </div>
       <div v-if="activeMenu === 'send-message'">
         <h3 class="text-lg font-semibold mb-2 text-gray-700 dark:text-gray-200">
           Kirim Pesan
         </h3>
         <form
           @submit.prevent="sendMessage"
-          class="flex flex-col gap-3 max-w-md mt-4"
+          class="flex flex-col gap-4 max-w-md mt-4"
         >
-          <input
-            v-model="to"
-            placeholder="Nomor Tujuan (62...)"
-            required
-            class="px-4 py-2 rounded border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-emerald-400"
-          />
-          <textarea
-            v-model="message"
-            placeholder="Isi Pesan"
-            required
-            class="px-4 py-2 rounded border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-emerald-400 min-h-[90px]"
-          />
+          <div>
+            <label
+              class="block mb-1 font-semibold text-gray-700 dark:text-gray-200"
+              >Nomor Tujuan</label
+            >
+            <PrelineInput
+              v-model="to"
+              type="text"
+              placeholder="Nomor Tujuan (62...)"
+              required
+              :error="''"
+            />
+          </div>
+          <div>
+            <label
+              class="block mb-1 font-semibold text-gray-700 dark:text-gray-200"
+              >Isi Pesan</label
+            >
+            <textarea
+              v-model="message"
+              placeholder="Isi Pesan"
+              required
+              rows="4"
+              class="w-full min-h-[90px] px-4 py-2 rounded-lg border border-gray-300 dark:border-gray-700 bg-gray-50 dark:bg-gray-700 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-emerald-400"
+            ></textarea>
+          </div>
           <button
             type="submit"
-            class="py-2 rounded bg-emerald-600 hover:bg-emerald-700 text-white font-semibold transition-colors mt-2"
+            class="w-full py-3 rounded-lg bg-emerald-600 hover:bg-emerald-700 focus:ring-2 focus:ring-emerald-400 text-white font-semibold transition-all shadow-md disabled:opacity-60 disabled:cursor-not-allowed mt-2"
           >
             Kirim
           </button>
@@ -142,16 +136,17 @@
         </h3>
         <form
           @submit.prevent="saveWebhookConfig"
-          class="flex flex-col gap-3 max-w-md mt-4"
+          class="flex flex-col gap-4 max-w-md mt-4"
         >
           <label class="text-sm font-medium text-gray-600 dark:text-gray-300"
             >Webhook URL</label
           >
-          <input
+          <PrelineInput
             v-model="webhookUrl"
+            type="text"
             placeholder="https://your-webhook-url.com/endpoint"
             required
-            class="px-4 py-2 rounded border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-emerald-400"
+            :error="''"
           />
           <label
             class="text-sm font-medium text-gray-600 dark:text-gray-300 mt-2"
@@ -160,7 +155,7 @@
           <textarea
             v-model="webhookHeaders"
             rows="4"
-            class="w-full border rounded px-3 py-2 text-sm bg-transparent font-mono"
+            class="w-full border rounded-lg px-3 py-2 text-sm bg-gray-50 dark:bg-gray-700 font-mono focus:outline-none focus:ring-2 focus:ring-emerald-400"
             placeholder='{"Authorization": "Bearer ..."}'
           ></textarea>
           <div v-if="webhookHeadersError" class="text-red-500 text-xs">
@@ -182,7 +177,7 @@
         </h3>
         <button
           @click="fetchGroups"
-          class="px-4 py-2 bg-blue-600 text-white rounded font-semibold hover:bg-blue-700 transition mb-4"
+          class="px-4 py-2 rounded-lg bg-blue-600 text-white font-semibold hover:bg-blue-700 focus:ring-2 focus:ring-blue-400 transition mb-4 shadow"
         >
           Refresh Group
         </button>
@@ -190,7 +185,7 @@
           <li
             v-for="g in groups"
             :key="g.id"
-            class="bg-gray-100 dark:bg-gray-800 rounded px-4 py-2 text-gray-800 dark:text-gray-100"
+            class="bg-gray-100 dark:bg-gray-800 rounded-lg px-4 py-2 text-gray-800 dark:text-gray-100 shadow-sm"
           >
             {{ g.name }} <span class="text-xs text-gray-400">({{ g.id }})</span>
           </li>
@@ -205,6 +200,7 @@ import { ref, onMounted, watch } from "vue";
 import { useRoute, useRouter } from "vue-router";
 import { API_BASE_URL } from "../config";
 import { notification } from "../composables/useNotification";
+import PrelineInput from "./_PrelineInput.vue";
 
 const route = useRoute();
 const router = useRouter();
