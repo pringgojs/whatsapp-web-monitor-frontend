@@ -48,6 +48,96 @@
         <div v-if="waNumber" class="font-semibold text-emerald-400 break-all">
           {{ waNumber }}
         </div>
+        <div v-if="apiKey" class="mt-4">
+          <div class="text-xs text-gray-400 mb-1">API Key:</div>
+          <div class="flex items-center gap-2">
+            <PrelineInput
+              v-model="apiKey"
+              type="text"
+              placeholder="API Key"
+              readonly
+              :error="''"
+              class="flex-1"
+            />
+            <button
+              type="button"
+              @click="apiKeyVisible = !apiKeyVisible"
+              class="p-2 rounded bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-800 border border-gray-200 dark:border-gray-700"
+              :title="apiKeyVisible ? 'Sembunyikan' : 'Tampilkan'"
+            >
+              <svg
+                v-if="!apiKeyVisible"
+                class="w-4 h-4"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"
+                />
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.478 0-8.268-2.943-9.542-7z"
+                />
+              </svg>
+              <svg
+                v-else
+                class="w-4 h-4"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.542-7a9.956 9.956 0 012.223-3.592m3.1-2.727A9.956 9.956 0 0112 5c4.478 0 8.268 2.943 9.542 7a9.965 9.965 0 01-4.293 5.411M15 12a3 3 0 11-6 0 3 3 0 016 0zm6 6L6 6"
+                />
+              </svg>
+            </button>
+            <button
+              type="button"
+              @click="copyApiKey"
+              class="p-2 rounded bg-emerald-100 dark:bg-emerald-800 text-emerald-700 dark:text-emerald-200 hover:bg-emerald-200 dark:hover:bg-emerald-700 border border-emerald-200 dark:border-emerald-700"
+              title="Salin API Key"
+            >
+              <svg
+                class="w-4 h-4"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2"
+                viewBox="0 0 24 24"
+              >
+                <rect x="9" y="9" width="13" height="13" rx="2" ry="2" />
+                <path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1" />
+              </svg>
+            </button>
+            <button
+              type="button"
+              @click="generateApiKey"
+              class="p-2 rounded bg-blue-100 dark:bg-blue-800 text-blue-700 dark:text-blue-200 hover:bg-blue-200 dark:hover:bg-blue-700 border border-blue-200 dark:border-blue-700"
+              title="Generate API Key Baru"
+            >
+              <svg
+                class="w-4 h-4"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  d="M12 4v16m8-8H4"
+                />
+              </svg>
+            </button>
+          </div>
+        </div>
       </div>
       <ul class="space-y-2">
         <li
@@ -82,6 +172,17 @@
           @click="activeMenu = 'group'"
         >
           Manajemen Group
+        </li>
+        <li
+          :class="[
+            'cursor-pointer rounded-lg px-4 py-2 font-semibold transition text-gray-800 dark:text-white',
+            activeMenu === 'api-key'
+              ? 'bg-emerald-600 text-white'
+              : 'hover:bg-gray-100 dark:hover:bg-gray-700',
+          ]"
+          @click="activeMenu = 'api-key'"
+        >
+          API Key
         </li>
       </ul>
     </aside>
@@ -191,6 +292,105 @@
           </li>
         </ul>
       </div>
+      <div
+        v-else-if="activeMenu === 'api-key'"
+        class="mt-8 p-4 rounded-lg bg-gray-50 dark:bg-gray-800"
+      >
+        <h3 class="text-lg font-semibold mb-2 text-gray-700 dark:text-gray-200">
+          API Key
+        </h3>
+        <div class="flex items-center gap-2">
+          <PrelineInput
+            v-model="apiKey"
+            type="text"
+            placeholder="API Key"
+            readonly
+            :error="''"
+            class="flex-1"
+          />
+          <button
+            type="button"
+            @click="apiKeyVisible = !apiKeyVisible"
+            class="p-2 rounded bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-800 border border-gray-200 dark:border-gray-700"
+            :title="apiKeyVisible ? 'Sembunyikan' : 'Tampilkan'"
+          >
+            <svg
+              v-if="!apiKeyVisible"
+              class="w-4 h-4"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+              viewBox="0 0 24 24"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"
+              />
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.478 0-8.268-2.943-9.542-7z"
+              />
+            </svg>
+            <svg
+              v-else
+              class="w-4 h-4"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+              viewBox="0 0 24 24"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.542-7a9.956 9.956 0 012.223-3.592m3.1-2.727A9.956 9.956 0 0112 5c4.478 0 8.268 2.943 9.542 7a9.965 9.965 0 01-4.293 5.411M15 12a3 3 0 11-6 0 3 3 0 016 0zm6 6L6 6"
+              />
+            </svg>
+          </button>
+          <button
+            type="button"
+            @click="copyApiKey"
+            class="p-2 rounded bg-emerald-100 dark:bg-emerald-800 text-emerald-700 dark:text-emerald-200 hover:bg-emerald-200 dark:hover:bg-emerald-700 border border-emerald-200 dark:border-emerald-700"
+            title="Salin API Key"
+          >
+            <svg
+              class="w-4 h-4"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+              viewBox="0 0 24 24"
+            >
+              <rect x="9" y="9" width="13" height="13" rx="2" ry="2" />
+              <path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1" />
+            </svg>
+          </button>
+          <button
+            type="button"
+            @click="generateApiKey"
+            class="p-2 rounded bg-blue-100 dark:bg-blue-800 text-blue-700 dark:text-blue-200 hover:bg-blue-200 dark:hover:bg-blue-700 border border-blue-200 dark:border-blue-700"
+            title="Generate API Key Baru"
+          >
+            <svg
+              class="w-4 h-4"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+              viewBox="0 0 24 24"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                d="M12 4v16m8-8H4"
+              />
+            </svg>
+          </button>
+        </div>
+        <div class="text-xs text-gray-400 mt-2">
+          API Key ini digunakan untuk mengakses API secara langsung. Jaga
+          kerahasiaan API Key ini seperti Anda menjaga password.
+        </div>
+      </div>
     </main>
   </div>
 </template>
@@ -209,6 +409,8 @@ const clients = ref([]);
 const activeMenu = ref("send-message");
 const waNumber = ref("");
 const showClientDropdown = ref(false);
+const apiKey = ref("");
+const apiKeyVisible = ref(false);
 
 // Fetch all clients for dropdown
 const fetchClients = async () => {
@@ -281,6 +483,8 @@ watch(
     } catch {
       webhookUrl.value = "";
     }
+    // Fetch API key
+    fetchApiKey();
   }
 );
 
@@ -416,12 +620,63 @@ const fetchGroups = async () => {
   }
 };
 
+const fetchApiKey = async () => {
+  try {
+    const token = localStorage.getItem("token");
+    const res = await fetch(`${API_BASE_URL}/clients/${clientId.value}/token`, {
+      headers: { Authorization: `Bearer ${token}` },
+    });
+    const data = await res.json();
+    if (res.ok && data.token) {
+      apiKey.value = data.token;
+    } else {
+      apiKey.value = "";
+    }
+  } catch {
+    apiKey.value = "";
+  }
+};
+
+watch(
+  () => clientId.value,
+  () => {
+    fetchApiKey();
+  },
+  { immediate: true }
+);
+
+function copyApiKey() {
+  if (apiKey.value) {
+    navigator.clipboard.writeText(apiKey.value);
+    notification("success", "API Key disalin ke clipboard");
+  }
+}
+
 function selectClient(c) {
   showClientDropdown.value = false;
   if (c !== clientId.value) {
     router.push({ name: "ClientDetail", params: { clientId: c } });
   }
 }
+
+const generateApiKey = async () => {
+  try {
+    const token = localStorage.getItem("token");
+    const res = await fetch(`${API_BASE_URL}/clients/${clientId.value}/token`, {
+      method: "POST",
+      headers: { Authorization: `Bearer ${token}` },
+    });
+    const data = await res.json();
+    if (res.ok && data.token) {
+      apiKey.value = data.token;
+      notification("success", "API Key baru berhasil dibuat!");
+    } else {
+      notification("error", data.error || "Gagal generate API Key");
+    }
+  } catch {
+    notification("error", "Gagal generate API Key");
+  }
+};
 </script>
 
 <!-- Tailwind migration: form section only. -->
