@@ -2,7 +2,6 @@ import { createRouter, createWebHistory } from "vue-router";
 import Login from "./components/Login.vue";
 import HelloWorld from "./components/HelloWorld.vue";
 import Dashboard from "./components/Dashboard.vue";
-import ScanQR from "./components/ScanQR.vue";
 import ClientStatus from "./components/ClientStatus.vue";
 import ClientsList from "./components/ClientsList.vue";
 import Register from "./components/Register.vue";
@@ -11,7 +10,6 @@ import UserManagement from "./components/UserManagement.vue";
 
 const routes = [
   { path: "/", name: "Dashboard", component: Dashboard },
-  { path: "/scan-qr", name: "ScanQR", component: ScanQR },
   { path: "/status", name: "ClientStatus", component: ClientStatus },
   { path: "/clients", name: "ClientsList", component: ClientsList },
   { path: "/login", name: "Login", component: Login },

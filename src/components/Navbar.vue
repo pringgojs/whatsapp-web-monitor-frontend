@@ -74,13 +74,6 @@
             </li>
             <li>
               <router-link
-                to="/scan-qr"
-                class="block px-3 py-1.5 hover:bg-emerald-50/70 dark:hover:bg-gray-800/70 rounded-md text-gray-700 dark:text-gray-200 font-normal transition"
-                >Scan QR</router-link
-              >
-            </li>
-            <li>
-              <router-link
                 to="/status"
                 class="block px-3 py-1.5 hover:bg-emerald-50/70 dark:hover:bg-gray-800/70 rounded-md text-gray-700 dark:text-gray-200 font-normal transition"
                 >Status Client</router-link
