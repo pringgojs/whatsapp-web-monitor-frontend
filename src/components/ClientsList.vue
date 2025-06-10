@@ -641,14 +641,13 @@ const fetchClients = async () => {
   loading.value = true;
   error.value = "";
   try {
-    const response = await fetch(`${API_BASE_URL}/sessions`, {
+    const response = await fetch(`${API_BASE_URL}/clients`, {
       headers: { ...getAuthHeaders() },
     });
     const data = await response.json();
-    if (response.ok && data.sessions) {
-      clients.value = data.sessions;
-      // Fetch status untuk setiap client
-      data.sessions.forEach(fetchStatus);
+    if (response.ok && data.clients) {
+      clients.value = data.clients.map((c) => c.id);
+      data.clients.forEach((c) => fetchStatus(c.id));
     } else {
       error.value = data.error || "Gagal memuat data client.";
     }
@@ -681,22 +680,25 @@ const fetchStatus = async (clientId) => {
   }
 };
 
+const doAfterAddClient = async (clientId) => {
+  await startSession(clientId);
+  fetchClients();
+};
+
 const addClient = async () => {
   if (!newClientId.value) return;
   try {
-    const response = await fetch(
-      `${API_BASE_URL}/sessions/${newClientId.value}`,
-      {
-        method: "POST",
-        headers: { "Content-Type": "application/json", ...getAuthHeaders() },
-      }
-    );
+    const response = await fetch(`${API_BASE_URL}/clients`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json", ...getAuthHeaders() },
+      body: JSON.stringify({ id: newClientId.value, name: newClientId.value }),
+    });
     const data = await response.json();
     if (response.ok) {
       notification("success", "Client berhasil ditambahkan.");
       showAddClient.value = false;
+      await doAfterAddClient(newClientId.value);
       newClientId.value = "";
-      fetchClients();
     } else {
       notification("error", data.error || "Gagal menambah client.");
     }
@@ -738,10 +740,12 @@ const cancelEdit = () => {
 };
 
 const addClientById = async (clientId) => {
-  await fetch(`${API_BASE_URL}/sessions/${clientId}`, {
+  await fetch(`${API_BASE_URL}/clients`, {
     method: "POST",
     headers: { "Content-Type": "application/json", ...getAuthHeaders() },
+    body: JSON.stringify({ id: clientId, name: clientId }),
   });
+  await startSession(clientId);
 };
 
 const deleteClient = async (clientId, silent = false) => {
@@ -907,6 +911,24 @@ const startQRStatusPolling = (clientId) => {
     }
   };
   poll();
+};
+
+const startSession = async (clientId) => {
+  try {
+    const response = await fetch(`${API_BASE_URL}/sessions/${clientId}`, {
+      method: "POST",
+      headers: { ...getAuthHeaders() },
+    });
+    if (response.ok) {
+      notification("success", "Session WhatsApp berhasil dibuat.");
+      fetchStatus(clientId);
+    } else {
+      const data = await response.json();
+      notification("error", data.error || "Gagal membuat session WhatsApp.");
+    }
+  } catch (e) {
+    notification("error", "Gagal membuat session WhatsApp.");
+  }
 };
 
 onMounted(fetchClients);
