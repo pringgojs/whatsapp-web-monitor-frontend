@@ -23,6 +23,20 @@
       </div>
       <div>
         <label class="block mb-1 font-semibold text-gray-700 dark:text-gray-200"
+          >Username</label
+        >
+        <PrelineInput
+          v-model="username"
+          type="text"
+          required
+          placeholder="Username"
+          :error="
+            error && error.toLowerCase().includes('username') ? error : ''
+          "
+        />
+      </div>
+      <div>
+        <label class="block mb-1 font-semibold text-gray-700 dark:text-gray-200"
           >Password</label
         >
         <PrelineInput
@@ -66,6 +80,7 @@ import { notification } from "../composables/useNotification";
 import PrelineInput from "./_PrelineInput.vue";
 
 const email = ref("");
+const username = ref("");
 const password = ref("");
 const role = ref("user");
 const error = ref("");
@@ -81,6 +96,7 @@ const handleRegister = async () => {
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
         email: email.value,
+        username: username.value,
         password: password.value,
         role: role.value,
       }),
