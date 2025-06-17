@@ -355,49 +355,6 @@ onMounted(async () => {
   }
 });
 
-// Watch for route changes to update clientId dan data terkait
-watch(
-  () => route.params.clientId,
-  async (newId) => {
-    clientId.value = newId;
-    // Reset form kirim pesan
-    to.value = "";
-    message.value = "";
-    // Fetch info client baru
-    try {
-      const token = localStorage.getItem("token");
-      const res = await fetch(`${API_BASE_URL}/sessions/${newId}/info`, {
-        headers: { Authorization: `Bearer ${token}` },
-      });
-      const data = await res.json();
-      if (res.ok && data.waNumber) {
-        waNumber.value = data.waNumber;
-      } else {
-        waNumber.value = "";
-      }
-    } catch {
-      waNumber.value = "";
-    }
-    // Fetch webhook client baru
-    try {
-      const token = localStorage.getItem("token");
-      const res = await fetch(`${API_BASE_URL}/sessions/${newId}/webhook`, {
-        headers: { Authorization: `Bearer ${token}` },
-      });
-      const data = await res.json();
-      if (res.ok && data.webhookUrl) {
-        webhookUrl.value = data.webhookUrl;
-      } else {
-        webhookUrl.value = "";
-      }
-    } catch {
-      webhookUrl.value = "";
-    }
-    // Fetch API key
-    fetchApiKey();
-  }
-);
-
 // Kirim Pesan
 const to = ref("");
 const message = ref("");
@@ -488,11 +445,44 @@ const saveWebhookConfig = async () => {
   }
 };
 
-// Fetch config when menu is opened or client changes
+// Watch perubahan clientId dan tab aktif untuk fetch config webhook
 watch(
   [activeMenu, clientId],
   ([menu, id], [oldMenu, oldId]) => {
-    if (menu === "webhook") fetchWebhookConfig();
+    if (menu === "webhook") {
+      fetchWebhookConfig();
+    }
+  },
+  { immediate: true }
+);
+
+// Sinkronkan clientId dengan route param agar reactive saat pindah client
+watch(
+  () => route.params.clientId,
+  (newId) => {
+    clientId.value = newId;
+  }
+);
+
+// Update nomor WhatsApp setiap kali clientId berubah
+watch(
+  () => clientId.value,
+  async (newId) => {
+    waNumber.value = "";
+    try {
+      const token = localStorage.getItem("token");
+      const res = await fetch(`${API_BASE_URL}/sessions/${newId}/info`, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      const data = await res.json();
+      if (res.ok && data.waNumber) {
+        waNumber.value = data.waNumber;
+      } else {
+        waNumber.value = "";
+      }
+    } catch {
+      waNumber.value = "";
+    }
   },
   { immediate: true }
 );
