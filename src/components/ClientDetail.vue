@@ -437,12 +437,17 @@ const webhookHeadersError = ref("");
 const fetchWebhookConfig = async () => {
   try {
     const token = localStorage.getItem("token");
-    // Fetch dari endpoint baru PATCH /clients/:clientId/webhook
-    const res = await fetch(`${API_BASE_URL}/clients/${clientId.value}`);
+    const res = await fetch(`${API_BASE_URL}/clients/${clientId.value}`, {
+      headers: { Authorization: `Bearer ${token}` },
+    });
     const data = await res.json();
     webhookUrl.value = data.client?.webhookUrl || "";
+    webhookHeaders.value = data.client?.webhookHeaders
+      ? JSON.stringify(data.client.webhookHeaders, null, 2)
+      : "";
   } catch (e) {
     webhookUrl.value = "";
+    webhookHeaders.value = "";
   }
 };
 
