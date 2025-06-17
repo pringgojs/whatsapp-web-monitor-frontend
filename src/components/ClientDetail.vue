@@ -433,48 +433,21 @@ const sendMessage = async () => {
 const webhookUrl = ref("");
 const webhookHeaders = ref("");
 const webhookHeadersError = ref("");
+
 const fetchWebhookConfig = async () => {
   try {
     const token = localStorage.getItem("token");
-    // Fetch URL
-    const res = await fetch(
-      `${API_BASE_URL}/sessions/${clientId.value}/webhook`,
-      {
-        headers: { Authorization: `Bearer ${token}` },
-      }
-    );
+    // Fetch dari endpoint baru PATCH /clients/:clientId/webhook
+    const res = await fetch(`${API_BASE_URL}/clients/${clientId.value}`);
     const data = await res.json();
-    webhookUrl.value = data.webhookUrl || "";
-    // Fetch headers
-    const res2 = await fetch(
-      `${API_BASE_URL}/sessions/${clientId.value}/webhook-headers`,
-      {
-        headers: { Authorization: `Bearer ${token}` },
-      }
-    );
-    const data2 = await res2.json();
-    webhookHeaders.value = data2.headers
-      ? JSON.stringify(data2.headers, null, 2)
-      : "";
+    webhookUrl.value = data.client?.webhookUrl || "";
   } catch (e) {
     webhookUrl.value = "";
-    webhookHeaders.value = "";
   }
 };
 
 const saveWebhookConfig = async () => {
   try {
-    // Save URL
-    const token = localStorage.getItem("token");
-    await fetch(`${API_BASE_URL}/sessions/${clientId.value}/webhook`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${token}`,
-      },
-      body: JSON.stringify({ webhookUrl: webhookUrl.value }),
-    });
-    // Save headers
     let headersObj = {};
     webhookHeadersError.value = "";
     if (webhookHeaders.value) {
@@ -485,15 +458,26 @@ const saveWebhookConfig = async () => {
         return;
       }
     }
-    await fetch(`${API_BASE_URL}/sessions/${clientId.value}/webhook-headers`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${token}`,
-      },
-      body: JSON.stringify({ headers: headersObj }),
-    });
-    notification("success", "Webhook config berhasil disimpan");
+    const token = localStorage.getItem("token");
+    const res = await fetch(
+      `${API_BASE_URL}/clients/${clientId.value}/webhook`,
+      {
+        method: "PATCH",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({
+          webhookUrl: webhookUrl.value,
+          webhookHeaders: headersObj,
+        }),
+      }
+    );
+    if (res.ok) {
+      notification("success", "Webhook config berhasil disimpan");
+    } else {
+      notification("error", "Gagal menyimpan webhook config");
+    }
   } catch (e) {
     notification("error", "Gagal menyimpan webhook config");
   }
